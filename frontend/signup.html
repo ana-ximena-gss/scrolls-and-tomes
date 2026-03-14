@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up</title>
+</head>
+<body>
+
+<h2>Sign Up</h2>
+
+<form id="signupForm">
+  <input type="text" id="username" placeholder="Username" required>
+  <input type="password" id="password" placeholder="Password" required>
+
+  <select id="major" required>
+    <option value="" disabled selected>Select your major</option>
+    <option value="business">Business</option>
+    <option value="engineering">Engineering</option>
+    <option value="arts">Arts</option>
+    <option value="medicine">Medicine</option>
+  </select>
+
+  <button type="submit">Sign Up</button>
+</form>
+
+<script>
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const major = document.getElementById("major").value;
+
+  const res = await fetch("/signup", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({username, password, major})
+  });
+
+  const text = await res.text();
+  if (text === "User created") {
+    alert("User created! Redirecting to login...");
+    window.location.href = "/login.html";
+} else {
+    alert(text);
+}
+});
+</script>
+
+</body>
+</html>

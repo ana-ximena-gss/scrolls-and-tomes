@@ -1,0 +1,27 @@
+{
+  "name": "scrolls-and-tomes",
+  "version": "1.0.0",
+  "description": "Scrolls & Tomes is a browser-based social RPG where university students join guilds based on their academic major, complete knowledge challenges, and compete with other guilds.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ana-ximena-gss/scrolls-and-tomes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ana-ximena-gss/scrolls-and-tomes/issues"
+  },
+  "homepage": "https://github.com/ana-ximena-gss/scrolls-and-tomes#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.2",
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
+  }
+}
