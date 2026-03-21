@@ -46,6 +46,28 @@ app.post("/signup", async (req, res) => {
 });
 
 // LOGIN
+// app.post("/login", (req, res) => {
+//     const { username, password } = req.body;
+
+//     db.get(
+//         "SELECT * FROM users WHERE username = ?",
+//         [username],
+//         async (err, user) => {
+//             if (!user) {
+//                 return res.status(400).send("User not found");
+//             }
+
+//             const match = await bcrypt.compare(password, user.password);
+
+//             if (match) {
+//                 res.send("Login successful");
+//             } else {
+//                 res.status(401).send("Invalid password");
+//             }
+//         }
+//     );
+// });
+
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
 
@@ -53,6 +75,7 @@ app.post("/login", (req, res) => {
         "SELECT * FROM users WHERE username = ?",
         [username],
         async (err, user) => {
+
             if (!user) {
                 return res.status(400).send("User not found");
             }
@@ -60,7 +83,11 @@ app.post("/login", (req, res) => {
             const match = await bcrypt.compare(password, user.password);
 
             if (match) {
-                res.send("Login successful");
+                res.json({
+                    message: "Login successful",
+                    username: user.username,
+                    major: user.major
+                });
             } else {
                 res.status(401).send("Invalid password");
             }

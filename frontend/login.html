@@ -13,13 +13,24 @@ e.preventDefault();
 const username = document.getElementById("username").value;
 const password = document.getElementById("password").value;
 
-const res = await fetch("http://localhost:3000/login", {
+const res = await fetch("/login", {
 method: "POST",
 headers: {"Content-Type": "application/json"},
 body: JSON.stringify({username, password})
 });
 
-const text = await res.text();
-alert(text);
+const data = await res.json();
+
+if (data.message === "Login successful") {
+
+    // Save real data from database
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("major", data.major);
+
+    window.location.href = "/dashboard.html";
+
+} else {
+    alert("Login failed");
+}
 });
 </script>

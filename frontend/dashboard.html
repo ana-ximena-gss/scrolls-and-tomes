@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard - Scrolls & Tomes</title>
+
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #f5f5f5;
+      font-family: Arial;
+      text-align: center;
+    }
+
+    h1 {
+      color: #d4af37;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .box {
+      border: 1px solid #d4af37;
+      padding: 20px;
+      margin: 20px auto;
+      width: 300px;
+      border-radius: 10px;
+    }
+
+    button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 200px;
+      background-color: #333;
+      color: white;
+      border: 1px solid #d4af37;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Scrolls & Tomes</h1>
+
+<div class="container">
+
+  <h2 id="welcome">Welcome, Adventurer</h2>
+  <p id="guild">Guild: Unknown</p>
+
+  <div class="box">
+    <h3>Your Stats</h3>
+    <p>Rank: Apprentice</p>
+    <p>XP: 0</p>
+  </div>
+
+  <div class="box">
+    <h3>Actions</h3>
+    <button>Answer Questions</button>
+    <button>Challenge Guilds</button>
+    <button>Guild Chat</button>
+    <button>Leaderboard</button>
+  </div>
+
+  <button onclick="logout()">Logout</button>
+
+</div>
+
+<script>
+// Get stored data
+const username = localStorage.getItem("username");
+const major = localStorage.getItem("major");
+
+// Redirect if not logged in
+if (!username || !major) {
+  window.location.href = "/login.html";
+}
+
+// Map major → guild
+function getGuild(major) {
+  if (major === "engineering") return "Mage Guild";
+  if (major === "business") return "Merchant Guild";
+  if (major === "arts") return "Artisan Guild";
+  if (major === "medicine") return "Healer Guild";
+  return "Unknown Guild";
+}
+
+// Display info
+document.getElementById("welcome").innerText = "Welcome, " + username;
+document.getElementById("guild").innerText = "Guild: " + getGuild(major);
+
+// Logout function
+function logout() {
+  localStorage.clear();
+  window.location.href = "/index.html";
+}
+</script>
+
+</body>
+</html>
