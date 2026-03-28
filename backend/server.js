@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 const db = new sqlite3.Database("./users.db");
 
-// Create table if it doesn't exist
+// Create user table if it doesn't exist
 db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE,
@@ -90,6 +90,38 @@ app.post("/login", (req, res) => {
                 });
             } else {
                 res.status(401).send("Invalid password");
+            }
+        }
+    );
+});
+
+//Create question Table if it doesn't exist
+//difficulty should be either easy, medium or hard
+//category should be the subject
+db.run(`CREATE TABLE IF NOT EXISTS questions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question TEXT,
+    answer TEXT,
+    difficulty TEXT,
+    category TEXT
+)`);
+
+//Add question to the database
+app.post("/add-question", (req, res) => {
+    const { question, answer, difficulty, category } = req.body;
+
+    if (!question || !answer || !difficulty || !category) {
+        return res.status(400).send("All fields required");
+    }
+
+    db.run(
+        "INSERT INTO questions (question, answer, difficulty, category) VALUES (?, ?, ?, ?)",
+        [question, answer, difficulty, category],
+        function(err) {
+            if (err) {
+                res.status(500).send("Error adding question");
+            } else {
+                res.send("Question added");
             }
         }
     );
