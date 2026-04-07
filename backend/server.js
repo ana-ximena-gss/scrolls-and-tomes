@@ -2,6 +2,7 @@ const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+const { calculateXP, determineRank } = require("./rankingXP.js");   //From rankingXP
 
 const app = express();
 
@@ -14,7 +15,10 @@ const db = new sqlite3.Database("./users.db");
 db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE,
-    password TEXT
+    password TEXT,
+    major TEXT,
+    xp INTEGER DEFAULT 0,
+    rank TEXT DEFAULT 'Bronze'
 )`);
 
 // SIGNUP
@@ -126,6 +130,9 @@ app.post("/add-question", (req, res) => {
         }
     );
 });
+
+//Ranking Storage and checks if the user's answer is right,
+//calculates their new stats, and saves it to the database.
 
 app.listen(3000, () => {
     console.log("Server running at http://localhost:3000");
