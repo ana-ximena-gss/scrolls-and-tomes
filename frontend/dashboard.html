@@ -61,10 +61,48 @@
 
   <div class="box">
     <h3>Actions</h3>
-    <button>Answer Questions</button>
+    <button onclick="startQuestions()">Answer Questions</button>
+    <button onclick="toggleCreateQuestion()">Create Question</button>
     <button>Challenge Guilds</button>
     <button>Guild Chat</button>
     <button>Leaderboard</button>
+  </div>
+  
+  <div class="box" id="questionBox" style="display:none;">
+    <h3>Question</h3>
+
+    <p id="questionText">Click start to load question</p>
+
+    <input type="text" id="answerInput" placeholder="Your answer">
+
+    <button onclick="submitAnswer()">Submit Answer</button>
+
+    <p id="resultText"></p>
+  </div>
+
+  <div class="box" id="createQuestionBox" style="display:none;">
+    <h3>Create Question</h3>
+
+    <input type="text" id="newQuestion" placeholder="Question"><br><br>
+    <input type="text" id="newAnswer" placeholder="Answer"><br><br>
+
+    <select id="newDifficulty">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select><br><br>
+
+    <select id="newCategory">
+      <option value="math">Math</option>
+      <option value="engineering">Engineering</option>
+      <option value="business">Business</option>
+      <option value="arts">Arts</option>
+      <option value="medicine">Medicine</option>
+    </select><br><br>
+
+    <button onclick="submitQuestion()">Submit Question</button>
+
+    <p id="createResult"></p>
   </div>
 
   <button onclick="logout()">Logout</button>
@@ -99,6 +137,89 @@ function logout() {
   localStorage.clear();
   window.location.href = "/index.html";
 }
+
+let currentQuestionId = null;
+
+// STEP 1: Load question when button is clicked
+async function startQuestions() {
+  document.getElementById("questionBox").style.display = "block";
+
+  const res = await fetch("/questions");
+  const data = await res.json();
+
+  if (!data || data.length === 0) {
+    document.getElementById("questionText").innerText = "No questions available";
+    return;
+  }
+
+  const q = data[0]; // first question for now
+  currentQuestionId = q.id;
+
+  document.getElementById("questionText").innerText = q.question;
+}
+
+// STEP 2: Submit answer
+async function submitAnswer() {
+  const answer = document.getElementById("answerInput").value;
+
+  const res = await fetch("/answer-question", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username,
+      questionId: currentQuestionId,
+      answer
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.correct) {
+    document.getElementById("resultText").innerText =
+      `Correct! +${data.xpGained} XP | Rank: ${data.rank}`;
+  } else {
+    document.getElementById("resultText").innerText =
+      "Wrong answer 😢";
+  }
+}
+
+function toggleCreateQuestion() {
+  const box = document.getElementById("createQuestionBox");
+
+  if (box.style.display === "none") {
+    box.style.display = "block";
+  } else {
+    box.style.display = "none";
+  }
+}
+
+async function submitQuestion() {
+  const question = document.getElementById("newQuestion").value;
+  const answer = document.getElementById("newAnswer").value;
+  const difficulty = document.getElementById("newDifficulty").value;
+  const category = document.getElementById("newCategory").value;
+
+  const res = await fetch("/add-question", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      question,
+      answer,
+      difficulty,
+      category
+    })
+  });
+
+  const text = await res.text();
+
+  document.getElementById("createResult").innerText = text;
+
+  // clear inputs after submit
+  document.getElementById("newQuestion").value = "";
+  document.getElementById("newAnswer").value = "";
+  document.getElementById("newCategory").value = "";
+}
+
 </script>
 
 </body>

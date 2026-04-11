@@ -131,6 +131,83 @@ app.post("/add-question", (req, res) => {
     );
 });
 
+app.get("/questions", (req, res) => {
+    db.all("SELECT * FROM questions", [], (err, rows) => {
+        if (err) {
+            return res.status(500).send("Error getting questions");
+        }
+        res.json(rows);
+    });
+});
+
+app.post("/answer-question", (req, res) => {
+    const { username, questionId, answer } = req.body;
+
+    if (!username || !questionId || !answer) {
+        return res.status(400).send("Missing fields");
+    }
+
+    // 1. Get question from database
+    db.get(
+        "SELECT * FROM questions WHERE id = ?",
+        [questionId],
+        (err, question) => {
+
+            if (!question) {
+                return res.status(404).send("Question not found");
+            }
+
+            // 2. Check if answer is correct
+            const isCorrect =
+                question.answer.trim().toLowerCase() === answer.trim().toLowerCase();
+
+            if (!isCorrect) {
+                return res.json({
+                    correct: false,
+                    message: "Wrong answer 😢"
+                });
+            }
+
+            // 3. Get user data
+            db.get(
+                "SELECT * FROM users WHERE username = ?",
+                [username],
+                (err, user) => {
+
+                    if (!user) {
+                        return res.status(404).send("User not found");
+                    }
+
+                    // 4. Calculate XP
+                    const xpGained = calculateXP(question.difficulty);
+                    const newXP = user.xp + xpGained;
+                    const newRank = determineRank(newXP);
+
+                    // 5. Update user in database
+                    db.run(
+                        "UPDATE users SET xp = ?, rank = ? WHERE username = ?",
+                        [newXP, newRank, username],
+                        function(err) {
+
+                            if (err) {
+                                return res.status(500).send("Error updating user");
+                            }
+
+                            // 6. Send response back to frontend
+                            res.json({
+                                correct: true,
+                                xpGained: xpGained,
+                                totalXP: newXP,
+                                rank: newRank
+                            });
+                        }
+                    );
+                }
+            );
+        }
+    );
+});
+
 //Ranking Storage and checks if the user's answer is right,
 //calculates their new stats, and saves it to the database.
 
