@@ -211,6 +211,23 @@ app.post("/answer-question", (req, res) => {
 //Ranking Storage and checks if the user's answer is right,
 //calculates their new stats, and saves it to the database.
 
+// GET leaderboard (sorted by XP)
+app.get("/leaderboard", (req, res) => {
+    db.all(
+        "SELECT username, major, xp, rank FROM users ORDER BY xp DESC",
+        [],
+        (err, rows) => {
+
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Error retrieving leaderboard" });
+            }
+
+            res.json(rows);
+        }
+    );
+});
+
 app.listen(3000, () => {
     console.log("Server running at http://localhost:3000");
 });

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard</title>
+</head>
+<body>
+
+<h1>Leaderboard</h1>
+
+<ul id="leaderboardList"></ul>
+
+<script>
+async function loadLeaderboard() {
+    try {
+        const res = await fetch("/leaderboard");
+        const data = await res.json();
+
+        console.log("DATA:", data);
+
+        const list = document.getElementById("leaderboardList");
+
+        if (data.length === 0) {
+            list.innerHTML = "<li>No users found</li>";
+            return;
+        }
+
+        data.forEach(user => {
+            const li = document.createElement("li");
+            li.textContent = `${user.username} - ${user.rank} (${user.xp} XP)`;
+            list.appendChild(li);
+        });
+
+    } catch (error) {
+        console.error("Error loading leaderboard:", error);
+    }
+}
+
+loadLeaderboard();
+</script>
+
+</body>
+</html>
