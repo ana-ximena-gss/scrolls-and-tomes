@@ -1,36 +1,213 @@
-<h2>Login</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        :root {
+            --parchment-bg: #fdf6e3;
+            --ink-dark: #2c1e16;
+            --ink-light: #5c4033;
+            --accent-red: #8b0000;
+            --accent-hover: #660000;
+            --input-bg: #f4ebd8;
+        }
 
-<form id="loginForm">
-<input type="text" id="username" placeholder="Username" required>
-<input type="password" id="password" placeholder="Password" required>
-<button type="submit">Login</button>
-</form>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif; /* Changed to a serif font for the academic vibe */
+        }
 
-<script>
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-e.preventDefault();
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--ink-dark);
+            position: relative;
+            overflow: hidden;
+        }
 
-const username = document.getElementById("username").value;
-const password = document.getElementById("password").value;
+        body::before {
+            content: "";
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px) brightness(0.4);
+            z-index: -1;
+        }
 
-const res = await fetch("/login", {
-method: "POST",
-headers: {"Content-Type": "application/json"},
-body: JSON.stringify({username, password})
-});
+        .login-container {
+            background-color: var(--parchment-bg);
+            padding: 3rem 2.5rem;
+            border-radius: 4px; /* Sharper corners like a book */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            border: 4px double var(--ink-light); /* Classic double border */
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
 
-const data = await res.json();
+        /* Decorative corners */
+        .login-container::before, .login-container::after {
+            content: "✦";
+            position: absolute;
+            color: var(--ink-light);
+            font-size: 1.5rem;
+        }
+        .login-container::before { top: 10px; left: 15px; }
+        .login-container::after { top: 10px; right: 15px; }
 
-if (data.message === "Login successful") {
+        .login-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--ink-dark);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
 
-    // Save real data from database
-    localStorage.setItem("username", data.username);
-    localStorage.setItem("major", data.major);
+        .login-header p {
+            color: var(--ink-light);
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
 
-    window.location.href = "/dashboard.html";
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
 
-} else {
-    alert("Login failed");
-}
-});
-</script>
+        .input-group input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--ink-light);
+            border-radius: 2px;
+            color: var(--ink-dark);
+            font-size: 1.1rem;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            background-color: #fffaf0;
+            box-shadow: 0 0 5px rgba(139, 0, 0, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: #8b7355;
+            font-style: italic;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent-red);
+            color: #fdf6e3;
+            border: 2px solid #5c0000;
+            border-radius: 2px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .submit-btn:active {
+            transform: translateY(2px);
+        }
+
+        #errorMessage {
+            color: var(--accent-red);
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+            min-height: 20px;
+            display: none;
+            padding: 0.5rem;
+            border-top: 1px dashed var(--accent-red);
+            border-bottom: 1px dashed var(--accent-red);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h2>Login</h2>
+            <p>Present your credentials</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Username" required autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Enter</button>
+            <div id="errorMessage">Invalid username or password.</div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const errorDiv = document.getElementById("errorMessage");
+            const submitBtn = document.querySelector(".submit-btn");
+
+            errorDiv.style.display = "none";
+            submitBtn.textContent = "Verifying...";
+            submitBtn.disabled = true;
+
+            try {
+                const res = await fetch("/login", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({username, password})
+                });
+
+                const data = await res.json();
+
+                if (data.message === "Login successful") {
+                    localStorage.setItem("username", data.username);
+                    localStorage.setItem("major", data.major);
+                    window.location.href = "/dashboard.html";
+                } else {
+                    errorDiv.textContent = data.message || "Authentication failed.";
+                    errorDiv.style.display = "block";
+                }
+            } catch (err) {
+                errorDiv.textContent = "The archives are currently unreachable.";
+                errorDiv.style.display = "block";
+            } finally {
+                submitBtn.textContent = "Entering...";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>

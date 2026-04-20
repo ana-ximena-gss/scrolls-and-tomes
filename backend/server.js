@@ -140,6 +140,8 @@ app.get("/questions", (req, res) => {
     });
 });
 
+//Ranking Storage and checks if the user's answer is right,
+//calculates their new stats, and saves it to the database.
 app.post("/answer-question", (req, res) => {
     const { username, questionId, answer } = req.body;
 
@@ -208,8 +210,116 @@ app.post("/answer-question", (req, res) => {
     );
 });
 
-//Ranking Storage and checks if the user's answer is right,
-//calculates their new stats, and saves it to the database.
+//Challenging System: Answer cross-guild challenges
+//DataBase for challenge questions
+db.run(`CREATE TABLE IF NOT EXISTS challenges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    challenger_username TEXT,
+    challenger_major TEXT,
+    question_id INTEGER,
+    status TEXT DEFAULT 'pending'
+)`);
+
+//Section on creating challenging question 
+app.post("/create-challenge", (req, res) => {
+    const { challenger_username, challenger_major, question_id } = req.body;
+
+    if (!challenger_username || !challenger_major || !question_id) {
+        return res.status(400).send("Missing required fields to create a challenge.");
+    }
+
+    // Verify the question actually exists
+    db.get("SELECT id FROM questions WHERE id = ?", [question_id], (err, question) => {
+        if (err || !question) return res.status(404).send("Question not found.");
+
+        db.run(
+            "INSERT INTO challenges (challenger_username, challenger_major, question_id) VALUES (?, ?, ?)",
+            [challenger_username, challenger_major, question_id],
+            function(err) {
+                if (err) return res.status(500).send("Error creating challenge.");
+                res.json({ message: "Global challenge created successfully!", challengeId: this.lastID });
+            }
+        );
+    });
+});
+
+//This is to see what challenge question are avalable
+app.get("/challenges/:myMajor", (req, res) => {
+    const myMajor = req.params.myMajor;
+
+    // Fetch all pending challenges EXCEPT the ones created by the same guild
+    const query = `
+        SELECT c.id AS challenge_id, c.challenger_username, c.challenger_major, q.question, q.difficulty, q.category 
+        FROM challenges c
+        JOIN questions q ON c.question_id = q.id
+        WHERE c.challenger_major != ? AND c.status = 'pending'
+    `;
+
+    db.all(query, [myMajor], (err, rows) => {
+        if (err) {
+            return res.status(500).send("Error retrieving challenges.");
+        }
+        res.json(rows);
+    });
+});
+
+//Doing the Challenge question and checking answers (very simailer to normal questions)
+app.post("/answer-challenge", (req, res) => {
+    const { challenge_id, username, answer } = req.body;
+
+    if (!challenge_id || !username || !answer) {
+        return res.status(400).send("Missing fields.");
+    }
+
+    db.get("SELECT * FROM challenges WHERE id = ? AND status = 'pending'", [challenge_id], (err, challenge) => {
+        if (err || !challenge) return res.status(404).send("Challenge not found or already completed.");
+
+        db.get("SELECT * FROM users WHERE username = ?", [username], (err, user) => {
+            if (err || !user) return res.status(404).send("User not found.");
+
+            // CHECK: You can't answer your own guild's challenge
+            if (user.major === challenge.challenger_major) {
+                return res.status(403).send("You cannot answer a challenge issued by your own guild, silly!");
+            }
+
+            db.get("SELECT * FROM questions WHERE id = ?", [challenge.question_id], (err, question) => {
+                if (err || !question) return res.status(404).send("Question not found.");
+
+                const isCorrect = question.answer.trim().toLowerCase() === answer.trim().toLowerCase();
+
+                if (!isCorrect) {
+                    return res.json({ correct: false, message: "Wrong answer to the challenge!" });
+                }
+
+                db.run("UPDATE challenges SET status = 'completed' WHERE id = ?", [challenge_id], (err) => {
+                    if (err) return res.status(500).send("Error updating challenge status.");
+
+                    // Award XP (1.5x bonus for doing a Challenge question )
+                    const baseXP = calculateXP(question.difficulty);
+                    const totalXPGained = Math.floor(baseXP * 1.5); 
+                    const newXP = user.xp + totalXPGained;
+                    const newRank = determineRank(newXP);
+
+                    db.run(
+                        "UPDATE users SET xp = ?, rank = ? WHERE username = ?",
+                        [newXP, newRank, username],
+                        (err) => {
+                            if (err) return res.status(500).send("Error updating user stats.");
+
+                            res.json({
+                                correct: true,
+                                message: `Challenge Completed! You defeated a ${challenge.difficulty} challenge from the ${challenge.challenger_major} guild.`,
+                                xpGained: totalXPGained,
+                                totalXP: newXP,
+                                rank: newRank
+                            });
+                        }
+                    );
+                });
+            });
+        });
+    });
+});
 
 // GET leaderboard (sorted by XP)
 app.get("/leaderboard", (req, res) => {
