@@ -157,6 +157,7 @@ body {
   flex-grow: 1;
   padding: 20px;
   display: flex;
+  min-height: 0;
 }
 
 /* CARD */
@@ -169,6 +170,7 @@ body {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-height: 0;
 }
 
 /* TITLE */
@@ -187,6 +189,7 @@ body {
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
+  min-height: 0;
 }
 
 /* INPUT */
@@ -199,7 +202,7 @@ body {
   flex: 1;
 }
 
-input, select {
+input, select, textarea {
   background-color: #1a2238 !important;
   color: #e6ecff !important;
   border: 1px solid #5da9ff !important;
@@ -267,7 +270,8 @@ input, select {
           </div>
 
           <div class="input-row">
-            <input type="text" id="chatInput" class="form-control" placeholder="Type a message...">
+            <!-- <input type="text" id="chatInput" class="form-control" placeholder="Type a message..."> -->
+            <textarea id="chatInput" class="form-control" placeholder="Type a message..." rows="2"></textarea>
             <button class="btn btn-primary" onclick="sendMessage()">Send</button>
           </div>
         </div>
@@ -364,21 +368,55 @@ function logout() {
   window.location.href = "/index.html";
 }
 
-/* CHAT (fixed: append instead of overwrite) */
-function sendMessage() {
+/* CHAT */
+async function sendMessage() {
   const input = document.getElementById("chatInput");
-  const chatBox = document.getElementById("chatBox");
-
   const message = input.value.trim();
   if (message === "") return;
 
-  const msgEl = document.createElement("p");
-  msgEl.innerHTML = `<strong>${username}:</strong> ${message}`;
+  const guild = getGuild(major);
 
-  chatBox.appendChild(msgEl);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  await fetch("/send-message", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      username,
+      guild,
+      message
+    })
+  });
 
   input.value = "";
+  loadMessages(); // reload chat
+}
+
+document.getElementById("chatInput").addEventListener("keydown", function(e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+/* LOAD MESSAGES */
+async function loadMessages() {
+  const guild = getGuild(major);
+
+  const res = await fetch(`/messages/${guild}`);
+  const data = await res.json();
+
+  const chatBox = document.getElementById("chatBox");
+  chatBox.innerHTML = "";
+
+  data.forEach(msg => {
+    const msgEl = document.createElement("p");
+    // msgEl.innerHTML = `<strong>${msg.username}:</strong> ${msg.message}`;
+
+    const formattedMessage = msg.message.replace(/\n/g, "<br>");
+    msgEl.innerHTML = `<strong>${msg.username}:</strong> ${formattedMessage}`;
+    chatBox.appendChild(msgEl);
+  });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 /* LOAD QUESTION */
@@ -452,6 +490,9 @@ async function submitQuestion() {
   document.getElementById("newAnswer").value = "";
   document.getElementById("newCategory").value = "";
 }
+
+loadMessages();
+setInterval(loadMessages, 3000);
 </script>
 
 </body>

@@ -338,6 +338,49 @@ app.get("/leaderboard", (req, res) => {
     );
 });
 
+
+db.run(`CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    guild TEXT,
+    message TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)`);
+
+app.post("/send-message", (req, res) => {
+    const { username, guild, message } = req.body;
+
+    if (!username || !guild || !message) {
+        return res.status(400).send("Missing fields");
+    }
+
+    db.run(
+        "INSERT INTO messages (username, guild, message) VALUES (?, ?, ?)",
+        [username, guild, message],
+        function(err) {
+            if (err) {
+                return res.status(500).send("Error sending message");
+            }
+            res.send("Message sent");
+        }
+    );
+});
+
+app.get("/messages/:guild", (req, res) => {
+    const guild = req.params.guild;
+
+    db.all(
+        "SELECT * FROM messages WHERE guild = ? ORDER BY timestamp ASC",
+        [guild],
+        (err, rows) => {
+            if (err) {
+                return res.status(500).send("Error retrieving messages");
+            }
+            res.json(rows);
+        }
+    );
+});
+
 app.listen(3000, () => {
     console.log("Server running at http://localhost:3000");
 });
