@@ -81,7 +81,8 @@ app.post("/login", (req, res) => {
         async (err, user) => {
 
             if (!user) {
-                return res.status(400).send("User not found");
+                //use json instead of send to fix bug with login.html
+                return res.status(400).json({ message: "User not found"});
             }
 
             const match = await bcrypt.compare(password, user.password);
@@ -93,7 +94,8 @@ app.post("/login", (req, res) => {
                     major: user.major
                 });
             } else {
-                res.status(401).send("Invalid password");
+                //use json instead of send to fix bug with login.html
+                res.status(401).json({ message: "Invalid password"});
             }
         }
     );

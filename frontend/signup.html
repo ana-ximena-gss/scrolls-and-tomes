@@ -1,50 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Sign Up</title>
+  <meta charset="UTF-8">
+  <title>Sign up - Scrolls & Tomes</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      /*background-color: #1a1a1a; /* Fallback color (son im crine) */
+    }
+
+    /* The original blurred library background 
+    (PLEASE TRY TO CHANGE THIS TO A PIXALITED BACKGROUND WITH A DIFFRENT BACKGROUND,*/
+    .background {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+      background-size: cover; background-position: center;
+      filter: blur(8px) brightness(0.3); /* Dark enough to make the card pop */
+      z-index: -1;
+      transform: scale(1.1); /* Prevents blurred edges from showing white borders */
+    }
+
+    .container {
+      display: flex; justify-content: center; align-items: center; height: 100vh;
+    }
+
+    /* The Quest-Log Card */
+    .card {
+      background: rgba(20, 20, 20, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      width: 360px;
+      padding: 50px 40px;
+      text-align: center;
+      border: 2px solid #D4AF37; /* Gold Frame */
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.15);
+      position: relative;
+    }
+
+    /* Decorative Gold Corners */
+    .card::before, .card::after {
+      content: "✧";
+      position: absolute;
+      color: #D4AF37;
+      font-size: 20px;
+      width: 20px; height: 20px;
+    }
+    .card::before { top: 12px; left: 12px; }
+    .card::after { bottom: 12px; right: 12px; }
+
+    h2 {
+      margin: 0; color: #D4AF37;
+      font-size: 24px; letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    }
+
+    .subtitle {
+      font-style: italic; color: #9A8D75;
+      font-size: 13px; margin: 10px 0 30px 0;
+      text-transform: lowercase;
+    }
+
+    form { display: flex; flex-direction: column; gap: 20px; }
+
+    /* Input styling with gold focus */
+    input, select {
+      width: 100%; box-sizing: border-box; padding: 12px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: #F8F5ED; font-family: inherit; font-size: 15px;
+      outline: none; transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      background-color: rgba(0, 0, 0, 0.7);
+      border-color: #D4AF37;
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+    }
+
+    input::placeholder { color: #888; font-style: italic; }
+
+    select option { background-color: #1a1a1a; color: #F8F5ED; }
+
+    /* Action Button - Gold Text on Deep Red */
+    button {
+      background-color: #8B0000;
+      color: #D4AF37;
+      border: 1px solid #D4AF37;
+      padding: 15px; margin-top: 10px;
+      font-weight: bold; font-size: 14px;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #A00000;
+      box-shadow: 0 0 15px rgba(139, 0, 0, 0.6);
+      transform: translateY(-1px);
+    }
+  </style>
 </head>
 <body>
 
-<h2>Sign Up</h2>
+  <div class="background"></div>
 
-<form id="signupForm">
-  <input type="text" id="username" placeholder="Username" required>
-  <input type="password" id="password" placeholder="Password" required>
+  <div class="container">
+    <div class="card">
+      <h2>SIGN UP</h2>
+      <p class="subtitle">It all starts here, shakabrah</p>
 
-  <select id="major" required>
-    <option value="" disabled selected>Select your major</option>
-    <option value="business">Business</option>
-    <option value="engineering">Engineering</option>
-    <option value="arts">Arts</option>
-    <option value="medicine">Medicine</option>
-  </select>
+      <form id="signupForm">
+        <input type="text" id="username" placeholder="Enter Username" required>
+        <input type="password" id="password" placeholder="Enter Password" required>
 
-  <button type="submit">Sign Up</button>
-</form>
+        <select id="major" required>
+          <option value="" disabled selected>Select your Major</option>
+          <option value="business">Business</option>
+          <option value="engineering">Engineering</option>
+          <option value="arts">Arts</option>
+          <option value="medicine">Medicine</option>
+        </select>
 
-<script>
-document.getElementById("signupForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+        <button type="submit">Begin</button>
+      </form>
+    </div>
+  </div>
 
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const major = document.getElementById("major").value;
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const major = document.getElementById("major").value;
 
-  const res = await fetch("/signup", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({username, password, major})
-  });
+      const res = await fetch("/signup", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password, major})
+      });
 
-  const text = await res.text();
-  if (text === "User created") {
-    alert("User created! Redirecting to login...");
-    window.location.href = "/login.html";
-} else {
-    alert(text);
-}
-});
-</script>
+      const text = await res.text();
+      if (text === "User created") {
+        alert("Character Created! Redirecting to login...");
+        window.location.href = "/login.html";
+      } else {
+        alert(text);
+      }
+    });
+  </script>
 
 </body>
 </html>

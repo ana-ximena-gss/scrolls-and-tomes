@@ -190,8 +190,9 @@
                 });
 
                 const data = await res.json();
-
-                if (data.message === "Login successful") {
+                
+                // using res.ok since its true for 200-level status code
+                if (res.ok && data.message === "Login successful") {
                     localStorage.setItem("username", data.username);
                     localStorage.setItem("major", data.major);
                     window.location.href = "/dashboard.html";
@@ -203,7 +204,7 @@
                 errorDiv.textContent = "The archives are currently unreachable.";
                 errorDiv.style.display = "block";
             } finally {
-                submitBtn.textContent = "Entering...";
+                submitBtn.textContent = "Entering";
                 submitBtn.disabled = false;
             }
         });
