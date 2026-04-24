@@ -21,6 +21,60 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
     rank TEXT DEFAULT 'Bronze'
 )`);
 
+db.run(`CREATE TABLE IF NOT EXISTS reactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER,
+    username TEXT,
+    emoji TEXT
+)`);
+
+db.run(`CREATE TABLE IF NOT EXISTS active_users (
+    username TEXT PRIMARY KEY,
+    guild TEXT,
+    last_active DATETIME DEFAULT CURRENT_TIMESTAMP,
+    room TEXT DEFAULT 'global'
+)`);
+
+app.post("/heartbeat", (req, res) => {
+    const { username, guild, room } = req.body;
+
+    db.run(
+        `INSERT OR REPLACE INTO active_users (username, guild, room, last_active) 
+         VALUES (?, ?, ?, CURRENT_TIMESTAMP)`,
+        [username, guild, room],
+        (err) => {
+            if (err) return res.status(500).send("Error");
+            res.sendStatus(200);
+        }
+    );
+});
+
+setInterval(() => {
+    db.run(`
+            DELETE FROM active_users
+            WHERE last_active < datetime('now', '-15 seconds')
+        `);
+}, 5000);
+
+app.get("/active-users/:room", (req, res) => {
+    db.all(
+        "SELECT username FROM active_users WHERE room = ?",
+        [req.params.room],
+        (err, rows) => {
+            if (err) return res.status(500).json([]);
+            res.json(rows);
+        }
+    );
+});
+
+app.post("/go-offline", (req, res) => {
+    const { username } = req.body;
+    db.run("DELETE FROM active_users WHERE username = ?", [username], (err) => {
+        if (err) return res.status(500).send("Error");
+        res.sendStatus(200);
+    });
+});
+
 // SIGNUP
 app.post("/signup", async (req, res) => {
     const { username, password, major } = req.body;
@@ -35,7 +89,7 @@ app.post("/signup", async (req, res) => {
         db.run(
             "INSERT INTO users (username, password, major) VALUES (?, ?, ?)",
             [username, hashedPassword, major],
-            function(err) {
+            function (err) {
                 if (err) {
                     res.status(400).send("User already exists");
                 } else {
@@ -50,27 +104,6 @@ app.post("/signup", async (req, res) => {
 });
 
 // LOGIN
-// app.post("/login", (req, res) => {
-//     const { username, password } = req.body;
-
-//     db.get(
-//         "SELECT * FROM users WHERE username = ?",
-//         [username],
-//         async (err, user) => {
-//             if (!user) {
-//                 return res.status(400).send("User not found");
-//             }
-
-//             const match = await bcrypt.compare(password, user.password);
-
-//             if (match) {
-//                 res.send("Login successful");
-//             } else {
-//                 res.status(401).send("Invalid password");
-//             }
-//         }
-//     );
-// });
 
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
@@ -82,7 +115,7 @@ app.post("/login", (req, res) => {
 
             if (!user) {
                 //use json instead of send to fix bug with login.html
-                return res.status(400).json({ message: "User not found"});
+                return res.status(400).json({ message: "User not found" });
             }
 
             const match = await bcrypt.compare(password, user.password);
@@ -95,7 +128,7 @@ app.post("/login", (req, res) => {
                 });
             } else {
                 //use json instead of send to fix bug with login.html
-                res.status(401).json({ message: "Invalid password"});
+                res.status(401).json({ message: "Invalid password" });
             }
         }
     );
@@ -123,7 +156,7 @@ app.post("/add-question", (req, res) => {
     db.run(
         "INSERT INTO questions (question, answer, difficulty, category) VALUES (?, ?, ?, ?)",
         [question, answer, difficulty, category],
-        function(err) {
+        function (err) {
             if (err) {
                 res.status(500).send("Error adding question");
             } else {
@@ -191,7 +224,7 @@ app.post("/answer-question", (req, res) => {
                     db.run(
                         "UPDATE users SET xp = ?, rank = ? WHERE username = ?",
                         [newXP, newRank, username],
-                        function(err) {
+                        function (err) {
 
                             if (err) {
                                 return res.status(500).send("Error updating user");
@@ -237,7 +270,7 @@ app.post("/create-challenge", (req, res) => {
         db.run(
             "INSERT INTO challenges (challenger_username, challenger_major, question_id) VALUES (?, ?, ?)",
             [challenger_username, challenger_major, question_id],
-            function(err) {
+            function (err) {
                 if (err) return res.status(500).send("Error creating challenge.");
                 res.json({ message: "Global challenge created successfully!", challengeId: this.lastID });
             }
@@ -298,7 +331,7 @@ app.post("/answer-challenge", (req, res) => {
 
                     // Award XP (1.5x bonus for doing a Challenge question )
                     const baseXP = calculateXP(question.difficulty);
-                    const totalXPGained = Math.floor(baseXP * 1.5); 
+                    const totalXPGained = Math.floor(baseXP * 1.5);
                     const newXP = user.xp + totalXPGained;
                     const newRank = determineRank(newXP);
 
@@ -346,42 +379,106 @@ db.run(`CREATE TABLE IF NOT EXISTS messages (
     username TEXT,
     guild TEXT,
     message TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    room TEXT DEFAULT 'global'
 )`);
 
 app.post("/send-message", (req, res) => {
-    const { username, guild, message } = req.body;
+    const { username, room, message } = req.body;
 
-    if (!username || !guild || !message) {
-        return res.status(400).send("Missing fields");
-    }
+    db.run(`DELETE FROM messages WHERE timestamp <= datetime('now', '-2 months')`, (err) => {
+        if (err) console.error("Error cleaning up old messages:", err);
+    });
 
     db.run(
-        "INSERT INTO messages (username, guild, message) VALUES (?, ?, ?)",
-        [username, guild, message],
-        function(err) {
-            if (err) {
-                return res.status(500).send("Error sending message");
-            }
+        "INSERT INTO messages (username, room, message) VALUES (?, ?, ?)",
+        [username, room, message],
+        function (err) {
+            if (err) return res.status(500).send("Error sending message");
             res.send("Message sent");
         }
     );
 });
 
-app.get("/messages/:guild", (req, res) => {
-    const guild = req.params.guild;
+app.post("/delete-message", (req, res) => {
+    const { messageId, username } = req.body;
 
-    db.all(
-        "SELECT * FROM messages WHERE guild = ? ORDER BY timestamp ASC",
-        [guild],
-        (err, rows) => {
+    if (!messageId || !username) {
+        return res.status(400).send("Missing fields");
+    }
+
+    db.run(
+        "DELETE FROM messages WHERE id = ? AND username = ?",
+        [messageId, username],
+        function (err) {
             if (err) {
-                return res.status(500).send("Error retrieving messages");
+                return res.status(500).send("Error deleting message");
             }
-            res.json(rows);
+            if (this.changes === 0) {
+                return res.status(403).send("Unauthorized: You can only delete your own messages");
+            }
+            res.send("Message deleted");
         }
     );
 });
+
+
+
+app.get("/messages/:room", (req, res) => {
+    const room = req.params.room;
+
+    db.all("SELECT * FROM messages WHERE room = ? ORDER BY timestamp ASC", [room], (err, messages) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Error retrieving messages" });
+        }
+
+        db.all("SELECT * FROM reactions", [], (err, reactions) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Error retrieving reactions" });
+            }
+
+            const messagesWithReactions = messages.map(msg => {
+                // Find all reactions for this specific message ID
+                const msgReactions = reactions.filter(r => r.message_id === msg.id);
+
+
+                const grouped = msgReactions.reduce((acc, r) => {
+                    if (!acc[r.emoji]) acc[r.emoji] = { count: 0, users: [] };
+                    acc[r.emoji].count++;
+                    acc[r.emoji].users.push(r.username);
+                    return acc;
+                }, {});
+
+                return { ...msg, reactionData: grouped };
+            });
+
+            res.json(messagesWithReactions);
+        });
+    });
+});
+
+app.post("/toggle-reaction", (req, res) => {
+    const { messageId, username, emoji } = req.body;
+
+    const checkQuery = "SELECT id FROM reactions WHERE message_id = ? AND username = ? AND emoji = ?";
+
+    db.get(checkQuery, [messageId, username, emoji], (err, row) => {
+        if (row) {
+            db.run("DELETE FROM reactions WHERE id = ?", [row.id], () => res.send("Removed"));
+        } else {
+            // Not reacted: Insert it (Toggle ON)
+            db.run(
+                "INSERT INTO reactions (message_id, username, emoji) VALUES (?, ?, ?)",
+                [messageId, username, emoji],
+                () => res.send("Added")
+            );
+        }
+    });
+});
+
+
 
 app.listen(3000, () => {
     console.log("Server running at http://localhost:3000");
