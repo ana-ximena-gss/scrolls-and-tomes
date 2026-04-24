@@ -9,412 +9,84 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter&display=swap" rel="stylesheet">
 
   <style>
-    html,
-    body {
-      height: 100%;
-      margin: 0;
-    }
+    /* =========================================================================
+       GLOBAL & LAYOUT
+       ========================================================================= */
+    html, body { height: 100%; margin: 0; }
+    body { background-color: #0b0f1a; color: #e6ecff; font-family: 'Inter', sans-serif; }
+    .container-fluid, .row { height: 100%; }
+    .row { display: flex; flex-wrap: nowrap; }
+    .main { height: 100%; display: flex; flex-direction: column; padding: 0; flex-grow: 1; min-width: 0; }
+    .content { flex-grow: 1; padding: 20px; display: flex; min-height: 0; min-width: 0; }
+    
+    /* =========================================================================
+       SIDEBAR
+       ========================================================================= */
+    .sidebar { height: 100%; background-color: #141a2e; padding: 20px; border-right: 1px solid #5da9ff; display: flex; flex-direction: column; transition: width 0.3s ease; width: 260px; flex-shrink: 0; }
+    .sidebar.collapsed { width: 80px; padding: 20px 10px; }
+    .sidebar h2 { font-family: 'Cinzel', serif; color: #5da9ff; font-size: 20px; transition: opacity 0.2s; }
+    .sidebar.collapsed h2 { opacity: 0; }
+    .sidebar.collapsed .nav-btn { font-size: 0; padding: 12px; }
+    .nav-section { margin-top: 20px; flex-grow: 1; }
 
-    body {
-      background-color: #0b0f1a;
-      color: #e6ecff;
-      font-family: 'Inter', sans-serif;
-    }
+    /* =========================================================================
+       BUTTONS & NAV
+       ========================================================================= */
+    .nav-btn { width: 100%; margin-bottom: 10px; background: none; border: 1px solid #5da9ff; color: #e6ecff; padding: 10px; transition: all 0.2s ease; white-space: nowrap; }
+    .nav-btn:hover { background-color: #1f2a4a; }
+    .nav-btn.active { background-color: #5da9ff; color: #0b0f1a; font-weight: bold; }
+    .divider { border-top: 1px solid rgba(93, 169, 255, 0.3); margin: 10px 0; }
+    .toggle-btn { background: none; border: 1px solid #5da9ff; color: #5da9ff; padding: 5px 10px; cursor: pointer; }
+    .btn-primary { background-color: #5da9ff; border: none; color: #0b0f1a; }
+    .btn-accent { background-color: #9b5cff; border: none; }
 
-    /* FULL HEIGHT */
-    .container-fluid,
-    .row {
-      height: 100%;
-    }
+    /* =========================================================================
+       TOP BAR & USER INFO
+       ========================================================================= */
+    .topbar { height: 60px; background-color: #0b0f1a; border-bottom: none; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #5da9ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0b0f1a; }
+    .user-text { text-align: right; }
+    .user-name { font-size: 14px; font-weight: bold; }
+    .user-guild { font-size: 12px; opacity: 0.7; }
 
-    /* SIDEBAR */
-    .sidebar {
-      height: 100%;
-      background-color: #141a2e;
-      padding: 20px;
-      border-right: 1px solid #5da9ff;
-      display: flex;
-      flex-direction: column;
-      transition: width 0.3s ease;
-      width: 260px;
-    }
+    /* =========================================================================
+       CHAT INTERFACE
+       ========================================================================= */
+    .card-custom { background-color: #141a2e; border: 1px solid #5da9ff; border-radius: 12px; padding: 20px; box-shadow: 0 0 15px rgba(93, 169, 255, 0.2); display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
+    .section-title { font-family: 'Cinzel', serif; font-size: 24px; color: #5da9ff; margin-bottom: 10px; }
+    .chat-box { flex-grow: 1; overflow-y: auto; background-color: #0a0e1a; padding: 15px; border-radius: 8px; margin-bottom: 15px; min-height: 0; }
+    .input-row { display: flex; gap: 10px; }
+    .input-row input { flex: 1; }
+    input, select, textarea { background-color: #1a2238 !important; color: #e6ecff !important; border: 1px solid #5da9ff !important; }
 
-    /* COLLAPSED */
-    .sidebar.collapsed {
-      width: 80px;
-      padding: 20px 10px;
-    }
+    /* =========================================================================
+       MESSAGES & REACTIONS
+       ========================================================================= */
+    .msg-wrapper { position: relative; padding: 8px; border-radius: 5px; margin-bottom: 5px; }
+    .msg-wrapper:hover { background-color: #1f2a4a; }
+    .msg-controls { position: absolute; right: 10px; top: 5px; opacity: 0; transition: opacity 0.2s; background: #0b0f1a; border: 1px solid #5da9ff; border-radius: 4px; padding: 2px 5px; display: flex; gap: 5px; }
+    .msg-wrapper:hover .msg-controls { opacity: 1; }
+    .reaction-btn { background: none; border: none; cursor: pointer; font-size: 14px; }
+    .tooltip-container { position: relative; display: inline-block; cursor: pointer; }
+    .tooltip-container .tooltip-text { visibility: hidden; background-color: #1a2238; color: #fff; padding: 6px 10px; border-radius: 6px; border: 1px solid #5da9ff; position: absolute; z-index: 9999; top: 130%; left: 0; transform: none; white-space: nowrap; opacity: 0; transition: opacity 0.3s; font-size: 11px; pointer-events: none; }
+    .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
-    .sidebar h2 {
-      font-family: 'Cinzel', serif;
-      color: #5da9ff;
-      font-size: 20px;
-      transition: opacity 0.2s;
-    }
-
-    .sidebar.collapsed h2 {
-      opacity: 0;
-    }
-
-    /* NAV */
-    .nav-section {
-      margin-top: 20px;
-      flex-grow: 1;
-    }
-
-    .nav-btn {
-      width: 100%;
-      margin-bottom: 10px;
-      background: none;
-      border: 1px solid #5da9ff;
-      color: #e6ecff;
-      padding: 10px;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .sidebar.collapsed .nav-btn {
-      font-size: 0;
-      padding: 12px;
-    }
-
-    .nav-btn:hover {
-      background-color: #1f2a4a;
-    }
-
-    .nav-btn.active {
-      background-color: #5da9ff;
-      color: #0b0f1a;
-      font-weight: bold;
-    }
-
-    /* DIVIDER ABOVE LOGOUT */
-    .divider {
-      border-top: 1px solid rgba(93, 169, 255, 0.3);
-      margin: 10px 0;
-    }
-
-    /* TOP BAR (INVISIBLE) */
-    .topbar {
-      height: 60px;
-      background-color: #0b0f1a;
-      border-bottom: none;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-    }
-
-    /* TOGGLE BUTTON */
-    .toggle-btn {
-      background: none;
-      border: 1px solid #5da9ff;
-      color: #5da9ff;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-
-    /* USER */
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background-color: #5da9ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #0b0f1a;
-    }
-
-    .user-text {
-      text-align: right;
-    }
-
-    .user-name {
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .user-guild {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-
-    /* MAIN */
-    .main {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding: 0;
-      flex-grow: 1;
-      min-width: 0;
-    }
-
-    /* CONTENT */
-    .content {
-      flex-grow: 1;
-      padding: 20px;
-      display: flex;
-      min-height: 0;
-      min-width: 0;
-    }
-
-    /* CARD */
-    .card-custom {
-      background-color: #141a2e;
-      border: 1px solid #5da9ff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 15px rgba(93, 169, 255, 0.2);
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-      min-height: 0;
-    }
-
-    /* TITLE */
-    .section-title {
-      font-family: 'Cinzel', serif;
-      font-size: 24px;
-      color: #5da9ff;
-      margin-bottom: 10px;
-    }
-
-    /* CHAT */
-    .chat-box {
-      flex-grow: 1;
-      overflow-y: auto;
-      background-color: #0a0e1a;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      min-height: 0;
-    }
-
-    /* INPUT */
-    .input-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .input-row input {
-      flex: 1;
-    }
-
-    input,
-    select,
-    textarea {
-      background-color: #1a2238 !important;
-      color: #e6ecff !important;
-      border: 1px solid #5da9ff !important;
-    }
-
-    /* BUTTONS */
-    .btn-primary {
-      background-color: #5da9ff;
-      border: none;
-      color: #0b0f1a;
-    }
-
-    .btn-accent {
-      background-color: #9b5cff;
-      border: none;
-    }
-
-    .msg-wrapper {
-      position: relative;
-      padding: 8px;
-      border-radius: 5px;
-      margin-bottom: 5px;
-    }
-
-    .msg-wrapper:hover {
-      background-color: #1f2a4a;
-    }
-
-    .msg-controls {
-      position: absolute;
-      right: 10px;
-      top: 5px;
-      opacity: 0;
-      transition: opacity 0.2s;
-      background: #0b0f1a;
-      border: 1px solid #5da9ff;
-      border-radius: 4px;
-      padding: 2px 5px;
-      display: flex;
-      gap: 5px;
-    }
-
-    .msg-wrapper:hover .msg-controls {
-      opacity: 1;
-    }
-
-    .reaction-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    /* Tooltip wrapper */
-    .tooltip-container {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
-
-    .tooltip-container .tooltip-text {
-      visibility: hidden;
-      background-color: #1a2238;
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid #5da9ff;
-
-      /* Position */
-      position: absolute;
-      z-index: 9999;
-      top: 130%;
-      left: 0;
-
-      transform: none;
-
-      white-space: nowrap;
-
-      opacity: 0;
-      transition: opacity 0.3s;
-      font-size: 11px;
-      pointer-events: none;
-    }
-
-    .tooltip-container:hover .tooltip-text {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .chat-toggle {
-      background-color: #1a2238;
-      color: #e6ecff;
-      border: 1px solid #5da9ff;
-      border-radius: 8px;
-      padding: 5px 10px;
-      font-size: 12px;
-      cursor: pointer;
-      width: auto;
-      height: 32px;
-    }
-
-    .chat-toggle:hover {
-      background-color: #222c4a;
-    }
-
-    .chat-dropdown {
-      position: relative;
-    }
-
-    .chat-dropbtn {
-      background: none;
-      border: 1px solid #5da9ff;
-      color: #5da9ff;
-      border-radius: 6px;
-      padding: 2px 8px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .chat-menu {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 28px;
-      background: #141a2e;
-      border: 1px solid #5da9ff;
-      border-radius: 8px;
-      overflow: hidden;
-      z-index: 1000;
-      min-width: 140px;
-    }
-
-    .chat-menu div {
-      padding: 8px 10px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .chat-menu div:hover {
-      background: #1f2a4a;
-    }
-
-    .active-btn {
-      background-color: #1a2238;
-      color: #e6ecff;
-      border: 1px solid #5da9ff;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .active-btn:hover {
-      background-color: #222c4a;
-    }
-
-    .chat-content {
-      display: flex;
-      flex-grow: 1;
-      gap: 10px;
-      min-height: 0;
-    }
-
-    .chat-messages {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      transition: all 0.3s ease;
-    }
-
-    .chat-users {
-      width: 0;
-      overflow: hidden;
-      transition: width 0.3s ease;
-      background-color: #0a0e1a;
-      border-left: 1px solid #5da9ff;
-      border-radius: 8px;
-      padding: 0;
-    }
-
-    /* OPEN */
-    .chat-users.open {
-      width: 220px;
-      padding: 10px;
-    }
-
-    #activeUsersList div {
-      padding: 6px;
-      border-bottom: 1px solid rgba(93, 169, 255, 0.2);
-      font-size: 13px;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: nowrap;
-    }
-
-    .sidebar {
-      flex-shrink: 0;
-    }
+    /* =========================================================================
+       CHAT DROPDOWN & ACTIVE USERS
+       ========================================================================= */
+    .chat-dropdown { position: relative; }
+    .chat-dropbtn { background: none; border: 1px solid #5da9ff; color: #5da9ff; border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: 14px; }
+    .chat-menu { display: none; position: absolute; right: 0; top: 28px; background: #141a2e; border: 1px solid #5da9ff; border-radius: 8px; overflow: hidden; z-index: 1000; min-width: 140px; }
+    .chat-menu div { padding: 8px 10px; cursor: pointer; font-size: 13px; }
+    .chat-menu div:hover { background: #1f2a4a; }
+    .active-btn { background-color: #1a2238; color: #e6ecff; border: 1px solid #5da9ff; border-radius: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    .active-btn:hover { background-color: #222c4a; }
+    .chat-content { display: flex; flex-grow: 1; gap: 10px; min-height: 0; }
+    .chat-messages { flex: 1; display: flex; flex-direction: column; min-width: 0; transition: all 0.3s ease; }
+    .chat-users { width: 0; overflow: hidden; transition: width 0.3s ease; background-color: #0a0e1a; border-left: 1px solid #5da9ff; border-radius: 8px; padding: 0; }
+    .chat-users.open { width: 220px; padding: 10px; }
+    #activeUsersList div { padding: 6px; border-bottom: 1px solid rgba(93, 169, 255, 0.2); font-size: 13px; }
   </style>
 </head>
 
@@ -423,29 +95,21 @@
   <div class="container-fluid">
     <div class="row">
 
-      <!-- SIDEBAR -->
       <div id="sidebar" class="sidebar">
         <h2>Scrolls & Tomes</h2>
-
         <div class="nav-section">
           <button class="nav-btn active" onclick="showSection('chat', this)">Guild Chat</button>
           <button class="nav-btn" onclick="showSection('questions', this)">Answer Questions</button>
           <button class="nav-btn" onclick="showSection('create', this)">Create Question</button>
           <button class="nav-btn" onclick="window.location.href='/leaderboard.html'">Leaderboard</button>
         </div>
-
         <div class="divider"></div>
-
         <button class="nav-btn" onclick="logout()">Logout</button>
       </div>
 
-      <!-- MAIN -->
       <div class="col main">
-
-        <!-- TOP BAR -->
         <div class="topbar">
           <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-
           <div class="user-info">
             <div class="user-text">
               <div class="user-name" id="usernameDisplay"></div>
@@ -455,99 +119,60 @@
           </div>
         </div>
 
-        <!-- CONTENT -->
         <div class="content">
-
           <div id="chatSection" style="display:flex; gap:10px; width:100%; height:100%;">
-
-            <!-- CHAT -->
             <div id="chatMain" class="card-custom" style="flex:1; min-width:0;">
-
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-
                 <div class="section-title" id="chatTitle">World Chat</div>
-
                 <div style="display:flex; align-items:center; gap:10px;">
-
-                  <button class="active-btn" onclick="toggleActivePanel()">
-                    👥 <span id="activeCount">0</span>
-                  </button>
-
+                  <button class="active-btn" onclick="toggleActivePanel()">👥 <span id="activeCount">0</span></button>
                   <div class="chat-dropdown">
                     <button class="chat-dropbtn" onclick="toggleRoomMenu()">▾</button>
-
                     <div id="roomMenu" class="chat-menu">
                       <div onclick="selectRoom('global')">🌍 World</div>
                       <div onclick="selectRoom('guild')">🏰 Guild</div>
                     </div>
                   </div>
-
                 </div>
               </div>
-
-              <!-- <div class="chat-box" id="chatBox">
-              <p style="opacity:.6;">💬 Guild chat will appear here</p>
-            </div> -->
-
               <div class="chat-content">
-
-                <!-- LEFT: CHAT -->
                 <div class="chat-messages">
                   <div class="chat-box" id="chatBox">
                     <p style="opacity:.6;">💬 Guild chat will appear here</p>
                   </div>
                 </div>
-
-                <!-- RIGHT: ACTIVE USERS -->
                 <div id="activeUsersPanel" class="chat-users">
                   <div class="section-title" style="font-size:16px;">Active Users</div>
                   <div id="activeUsersList"></div>
                 </div>
-
               </div>
-
               <div class="input-row">
                 <textarea id="chatInput" class="form-control" placeholder="Type a message..." rows="2"></textarea>
                 <button class="btn btn-primary" onclick="sendMessage()">Send</button>
               </div>
-
             </div>
-
-            <!-- SLIDING ACTIVE USERS PANEL
-          <div id="activeUsersPanel" class="active-users-panel">
-            <div class="section-title" style="font-size:16px;">Active Users</div>
-            <div id="activeUsersList"></div>
-          </div> -->
-
           </div>
 
           <div id="questionsSection" class="card-custom" style="display:none;">
             <div class="section-title">Answer Questions</div>
-
             <p id="questionText">Click to load a question</p>
             <input type="text" id="answerInput" class="form-control">
-
             <button class="btn btn-primary mt-2" onclick="startQuestions()">Load Question</button>
             <button class="btn btn-accent mt-2" onclick="submitAnswer()">Submit Answer</button>
-
             <p id="resultText"></p>
           </div>
 
           <div id="createSection" class="card-custom" style="display:none;">
             <div class="section-title">Create Question</div>
-
             <label style="margin-bottom:4px; opacity:0.8;">Question</label>
             <input type="text" id="newQuestion" class="form-control mb-2" placeholder="Enter the question">
-
             <label style="margin-bottom:4px; opacity:0.8;">Answer</label>
             <input type="text" id="newAnswer" class="form-control mb-2" placeholder="Enter the correct answer">
-
             <select id="newDifficulty" class="form-control mb-2">
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
               <option value="hard">Hard</option>
             </select>
-
             <select id="newCategory" class="form-control mb-2">
               <option value="math">Math</option>
               <option value="engineering">Engineering</option>
@@ -555,19 +180,18 @@
               <option value="arts">Arts</option>
               <option value="medicine">Medicine</option>
             </select>
-
             <button class="btn btn-primary" onclick="submitQuestion()">Submit</button>
-
             <p id="createResult"></p>
           </div>
-
         </div>
-
       </div>
     </div>
   </div>
 
   <script>
+    /* =========================================================================
+       USER DATA & AUTHENTICATION
+       ========================================================================= */
     const username = localStorage.getItem("username");
     const major = localStorage.getItem("major");
 
@@ -587,58 +211,118 @@
       return `guild_${major}`;
     }
 
-    /* HEADER UI */
+    /* HEADER UI SETUP */
     document.getElementById("usernameDisplay").innerText = username;
     document.getElementById("guildDisplay").innerText = getGuild(major);
     document.getElementById("avatar").innerText = username.charAt(0).toUpperCase();
 
     const guildName = getGuild(major);
-
-    /* STATE */
+    let currentRoom = "global";
     let currentQuestionId = null;
 
-    /* SIDEBAR TOGGLE */
+    /* =========================================================================
+       UI NAVIGATION & TOGGLES
+       ========================================================================= */
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("collapsed");
     }
 
-    /* SECTION NAVIGATION */
     function showSection(section, btn) {
       document.getElementById("chatSection").style.display = "none";
       document.getElementById("questionsSection").style.display = "none";
       document.getElementById("createSection").style.display = "none";
-
       document.getElementById(section + "Section").style.display = "flex";
-
       document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
       if (btn) btn.classList.add("active");
     }
 
-    /* LOGOUT */
+    function toggleRoomMenu() {
+      const menu = document.getElementById("roomMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function toggleActivePanel() {
+      const panel = document.getElementById("activeUsersPanel");
+      panel.classList.toggle("open");
+    }
+
     function logout() {
       localStorage.clear();
       window.location.href = "/index.html";
     }
 
+    /* =========================================================================
+       CHAT LOGIC
+       ========================================================================= */
+    async function sendMessage() {
+      const input = document.getElementById("chatInput");
+      const message = input.value.trim();
+      if (!message) return;
+      await fetch("/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, room: currentRoom, message })
+      });
+      input.value = "";
+      loadMessages();
+    }
+
+    async function loadMessages() {
+      const res = await fetch(`/messages/${currentRoom}`);
+      const messages = await res.json();
+      const chatBox = document.getElementById("chatBox");
+      const isNearBottom = chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 50;
+      chatBox.innerHTML = "";
+
+      messages.forEach(msg => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "msg-wrapper";
+
+        let reactionsHtml = "";
+        if (msg.reactionData) {
+          for (const [emoji, data] of Object.entries(msg.reactionData)) {
+            const userList = data.users.join(", ");
+            reactionsHtml += `
+              <div class="tooltip-container">
+                  <button class="reaction-btn" style="margin-right:8px; border:1px solid #333; padding:2px 5px; border-radius:4px" onclick="toggleReaction(${msg.id}, '${emoji}')">
+                      ${emoji} ${data.count}
+                  </button>
+                  <span class="tooltip-text">Reacted by: ${userList}</span>
+              </div>
+            `;
+          }
+        }
+
+        let controlsHtml = `
+          <div class="msg-controls">
+            <button class="reaction-btn" onclick="toggleReaction(${msg.id}, '👍')">👍</button>
+            <button class="reaction-btn" onclick="toggleReaction(${msg.id}, '❤️')">❤️</button>
+            <button class="reaction-btn" onclick="toggleReaction(${msg.id}, '😂')">😂</button>
+            ${msg.username === username ? `<button class="reaction-btn" onclick="deleteMessage(${msg.id})" style="color:red">❌</button>` : ''}
+          </div>
+        `;
+
+        wrapper.innerHTML = `
+          <div><strong>${msg.username}:</strong> ${msg.message.replace(/\n/g, "<br>")}</div>
+          <div style="margin: 5px 0;">${reactionsHtml}</div>
+          ${controlsHtml}
+        `;
+        chatBox.appendChild(wrapper);
+      });
+
+      if (isNearBottom) chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
     async function deleteMessage(messageId) {
       if (!confirm("Are you sure you want to delete this message?")) return;
-
       await fetch("/delete-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messageId, username })
       });
-
-      loadMessages(); // Refresh chat after deletion
+      loadMessages();
     }
 
-    document.getElementById("chatInput").addEventListener("keydown", function (e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
     async function toggleReaction(messageId, emoji) {
       await fetch("/toggle-reaction", {
         method: "POST",
@@ -648,279 +332,124 @@
       loadMessages();
     }
 
-    async function addReaction(messageId, emoji) {
-      // 1. Send the reaction
-      await fetch("/add-reaction", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messageId, username, emoji })
-      });
-
+    async function selectRoom(room) {
+      currentRoom = room;
+      document.getElementById("roomMenu").style.display = "none";
+      await sendHeartbeat();
       loadMessages();
-    }
-
-    /* LOAD QUESTION */
-    async function startQuestions() {
-      const res = await fetch("/questions");
-      const data = await res.json();
-
-      const questionText = document.getElementById("questionText");
-
-      if (!data || data.length === 0) {
-        questionText.innerText = "No questions available";
-        return;
-      }
-
-      const q = data[0]; // first question for now
-      currentQuestionId = q.id;
-
-      questionText.innerText = q.question;
-    }
-
-    /* SUBMIT ANSWER */
-    async function submitAnswer() {
-      const answer = document.getElementById("answerInput").value;
-
-      const res = await fetch("/answer-question", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          questionId: currentQuestionId,
-          answer
-        })
-      });
-
-      const data = await res.json();
-
-      const resultText = document.getElementById("resultText");
-
-      if (data.correct) {
-        resultText.innerText =
-          `Correct! +${data.xpGained} XP | Rank: ${data.rank}`;
-      } else {
-        resultText.innerText = "Wrong answer 😢";
-      }
+      updateChatTitle();
     }
 
     function updateChatTitle() {
       const title = document.getElementById("chatTitle");
       if (!title) return;
+      if (currentRoom === "global") title.innerText = "World Chat";
+      else if (currentRoom === "guild") title.innerText = `${getGuild(major)} Chat`;
+      else title.innerText = "Chat";
+    }
 
-      if (currentRoom === "global") {
-        title.innerText = "World Chat";
-      } else if (currentRoom === "guild") {
-        title.innerText = `${getGuild(major)} Chat`;
+    /* =========================================================================
+       QUESTION LOGIC
+       ========================================================================= */
+    async function startQuestions() {
+      const res = await fetch("/questions");
+      const data = await res.json();
+      const questionText = document.getElementById("questionText");
+      if (!data || data.length === 0) { questionText.innerText = "No questions available"; return; }
+      const q = data[0];
+      currentQuestionId = q.id;
+      questionText.innerText = q.question;
+    }
+
+    async function submitAnswer() {
+      const answer = document.getElementById("answerInput").value;
+      const res = await fetch("/answer-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, questionId: currentQuestionId, answer })
+      });
+      const data = await res.json();
+      const resultText = document.getElementById("resultText");
+      if (data.correct) {
+        resultText.innerText = `Correct! +${data.xpGained} XP | Rank: ${data.rank}`;
       } else {
-        title.innerText = "Chat";
+        resultText.innerText = "Wrong answer 😢";
       }
     }
 
-
-
-    /* CREATE QUESTION */
     async function submitQuestion() {
       const question = document.getElementById("newQuestion").value;
       const answer = document.getElementById("newAnswer").value;
       const difficulty = document.getElementById("newDifficulty").value;
       const category = document.getElementById("newCategory").value;
-
       const res = await fetch("/add-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question,
-          answer,
-          difficulty,
-          category
-        })
+        body: JSON.stringify({ question, answer, difficulty, category })
       });
-
       const text = await res.text();
-
       document.getElementById("createResult").innerText = text;
-
-      // clear inputs
       document.getElementById("newQuestion").value = "";
       document.getElementById("newAnswer").value = "";
       document.getElementById("newCategory").value = "";
     }
 
+    /* =========================================================================
+       NETWORKING & LIFECYCLE
+       ========================================================================= */
     async function sendHeartbeat() {
       await fetch("/heartbeat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          guild: getGuild(major),
-          room: currentRoom
-        })
+        body: JSON.stringify({ username, guild: getGuild(major), room: currentRoom })
       });
     }
 
     async function updateActiveUsers() {
       const res = await fetch(`/active-users/${currentRoom}`);
       const users = await res.json();
-
-      // update count badge
       document.getElementById("activeCount").innerText = users.length;
-
-      // OPTIONAL: if you want a dropdown list later, keep this:
       const listDiv = document.getElementById("activeUsersList");
       if (listDiv) {
-        listDiv.innerHTML = users.length > 0
-          ? users.map(u => `<div>🟢 ${u.username}</div>`).join("")
-          : "No one online";
+        listDiv.innerHTML = users.length > 0 ? users.map(u => `<div>🟢 ${u.username}</div>`).join("") : "No one online";
       }
     }
 
-    setInterval(() => {
-      sendHeartbeat();
-      updateActiveUsers();
-    }, 10000);
+    // Interval Timers
+    setInterval(() => { sendHeartbeat(); updateActiveUsers(); }, 10000);
+    setInterval(loadMessages, 3000);
 
-    // Run once on load
+    // Initial Load
     sendHeartbeat();
     updateActiveUsers();
+    loadMessages();
+    updateChatTitle();
 
+    // Event Listeners
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === 'hidden') {
-        // Send a "goodbye" signal to the server
-        // We use navigator.sendBeacon because it works even if the page is unloading
         const data = JSON.stringify({ username });
         navigator.sendBeacon('/go-offline', new Blob([data], { type: 'application/json' }));
       } else if (document.visibilityState === 'visible') {
-        // User returned, restart the heartbeat
         sendHeartbeat();
         updateActiveUsers();
       }
     });
 
-    let currentRoom = "global";
-
-    async function switchRoom() {
-      let selector = document.getElementById("roomSelector");
-      let selected = selector.value;
-
-      if (selected === "custom") {
-        let teamName = prompt("Enter Team Name:");
-        if (teamName) {
-          currentRoom = `team_${teamName}`;
-        }
-      } else {
-        currentRoom = selected;
-      }
-
-      await sendHeartbeat();
-      loadMessages();
-
-      updateChatTitle(); // 👈 add this
-    }
-
-    async function sendMessage() {
-      const input = document.getElementById("chatInput");
-      const message = input.value.trim();
-
-      if (!message) return;
-
-      await fetch("/send-message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, room: currentRoom, message })
-      });
-
-      input.value = "";
-      loadMessages();
-    }
-
-  async function loadMessages() {
-    const res = await fetch(`/messages/${currentRoom}`);
-    const messages = await res.json();
-
-    const chatBox = document.getElementById("chatBox");
-
-    const isNearBottom =
-      chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 50;
-
-    chatBox.innerHTML = "";
-
-    messages.forEach(msg => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "msg-wrapper";
-
-      let reactionsHtml = "";
-      if (msg.reactionData) {
-        for (const [emoji, data] of Object.entries(msg.reactionData)) {
-          const userList = data.users.join(", ");
-          reactionsHtml += `
-            <div class="tooltip-container">
-                <button class="reaction-btn" 
-                        style="margin-right:8px; border:1px solid #333; padding:2px 5px; border-radius:4px" 
-                        onclick="toggleReaction(${msg.id}, '${emoji}')">
-                    ${emoji} ${data.count}
-                </button>
-                <span class="tooltip-text">Reacted by: ${userList}</span>
-            </div>
-          `;
-        }
-      }
-
-      let controlsHtml = `
-        <div class="msg-controls">
-          <button class="reaction-btn" onclick="toggleReaction(${msg.id}, '👍')">👍</button>
-          <button class="reaction-btn" onclick="toggleReaction(${msg.id}, '❤️')">❤️</button>
-          <button class="reaction-btn" onclick="toggleReaction(${msg.id}, '😂')">😂</button>
-          ${msg.username === username ? `<button class="reaction-btn" onclick="deleteMessage(${msg.id})" style="color:red">❌</button>` : ''}
-        </div>
-      `;
-
-      wrapper.innerHTML = `
-        <div><strong>${msg.username}:</strong> ${msg.message.replace(/\n/g, "<br>")}</div>
-        <div style="margin: 5px 0;">${reactionsHtml}</div>
-        ${controlsHtml}
-      `;
-
-      chatBox.appendChild(wrapper);
-    });
-
-    if (isNearBottom) {
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  }
-
-    function toggleRoomMenu() {
-      const menu = document.getElementById("roomMenu");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
-
-    async function selectRoom(room) {
-      currentRoom = room;
-
-      document.getElementById("roomMenu").style.display = "none";
-
-      await sendHeartbeat();
-      loadMessages();
-      updateChatTitle();
-    }
-
     document.addEventListener("click", (e) => {
       const menu = document.getElementById("roomMenu");
       const btn = document.querySelector(".chat-dropbtn");
-
-      if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
         menu.style.display = "none";
       }
     });
 
-    function toggleActivePanel() {
-      const panel = document.getElementById("activeUsersPanel");
-      panel.classList.toggle("open");
-    }
-    loadMessages();
-    updateChatTitle();
-    setInterval(loadMessages, 3000);
+    document.getElementById("chatInput").addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
   </script>
-
 </body>
-
 </html>
