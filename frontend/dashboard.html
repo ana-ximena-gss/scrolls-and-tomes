@@ -87,6 +87,159 @@
     .chat-users { width: 0; overflow: hidden; transition: width 0.3s ease; background-color: #0a0e1a; border-left: 1px solid #5da9ff; border-radius: 8px; padding: 0; }
     .chat-users.open { width: 220px; padding: 10px; }
     #activeUsersList div { padding: 6px; border-bottom: 1px solid rgba(93, 169, 255, 0.2); font-size: 13px; }
+
+        /* =========================================================================
+        QUESTION FILTERS
+       ========================================================================= */
+
+    .filter-box {
+      border: 1px solid #5da9ff;
+      padding: 10px;
+      border-radius: 8px;
+      min-width: 140px;
+      background-color: #1a2238;
+    }
+
+    /* ===== FILTER UI REDESIGN ===== */
+
+    .filter-group {
+      background: #141a2e;
+      border: 1px solid #5da9ff;
+      border-radius: 10px;
+      padding: 8px;
+    }
+
+    .filter-title {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-pill {
+      border: 1px solid #5da9ff;
+      background: transparent;
+      color: #e6ecff;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: block;
+      width: 100%;
+    }
+
+    .filter-pill:hover {
+      background: #1f2a4a;
+    }
+
+    .selected-filters {
+      background: #0a0e1a;
+      border: 1px solid #5da9ff;
+      border-radius: 10px;
+      padding: 10px;
+
+      display: flex;
+      flex-direction: column;
+      height: 100%; 
+      overflow: hidden;  
+    }
+
+    .selected-filters::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .selected-filters::-webkit-scrollbar-thumb {
+      background: #5da9ff;
+      border-radius: 10px;
+    }
+
+    .selected-filters::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* INCLUDE */
+    .filter-pill.include {
+      background: #5da9ff;
+      color: #0b0f1a;
+    }
+
+    .filter-pill {
+      display: block;
+      width: 100%;
+      text-align: left;
+      white-space: normal;
+      position: relative;
+    }
+
+    /* EXCLUDE */
+    .filter-pill.exclude {
+      background: #ff5d5d;
+      color: white;
+    }
+
+    .filter-group,
+    .selected-filters {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .filter-options {
+      flex: 1;
+    }
+
+    .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch; /* force same width */
+  }
+
+  .filter-pill {
+    width: 100%;        /* FULL width */
+    text-align: center; /* optional: looks nicer */
+  }
+
+    /* ===== QUESTION LIST SCROLL ===== */
+
+    .question-list {
+      flex: 1;
+      overflow-y: auto;
+      background: #0a0e1a;
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 300px;
+    }
+
+    .filter-chip {
+      display: inline-block;
+      margin: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .filter-chip.include {
+      background: #5da9ff;
+      color: #0b0f1a;
+    }
+
+    .filter-chip.exclude {
+      background: #ff5d5d;
+      color: white;
+    }
+
+    .filter-chip.exclude {
+      background: #ff5d5d;
+      color: white;
+    }
   </style>
 </head>
 
@@ -101,6 +254,7 @@
           <button class="nav-btn active" onclick="showSection('chat', this)">Guild Chat</button>
           <button class="nav-btn" onclick="showSection('questions', this)">Answer Questions</button>
           <button class="nav-btn" onclick="showSection('create', this)">Create Question</button>
+          <button class="nav-btn" onclick="showSection('myQuestions', this)">My Questions</button>
           <button class="nav-btn" onclick="window.location.href='/leaderboard.html'">Leaderboard</button>
         </div>
         <div class="divider"></div>
@@ -154,12 +308,89 @@
           </div>
 
           <div id="questionsSection" class="card-custom" style="display:none;">
+            
+            <div style="display:flex; gap:16px; margin-bottom:15px; align-items:stretch;">
+
+                <!-- CATEGORY -->
+                <div class="filter-group" id="categoryFilter" style="flex:0.8;">
+                  <div class="filter-title">Category</div>
+                  <div class="filter-options" style="flex-direction:column;">
+                    <button class="filter-pill" data-value="math">Math</button>
+                    <button class="filter-pill" data-value="engineering">Engineering</button>
+                    <button class="filter-pill" data-value="business">Business</button>
+                    <button class="filter-pill" data-value="arts">Arts</button>
+                    <button class="filter-pill" data-value="medicine">Medicine</button>
+                  </div>
+                </div>
+
+                <!-- DIFFICULTY -->
+                <div class="filter-group" id="difficultyFilter" style="flex:0.8;">
+                  <div class="filter-title">Difficulty</div>
+                  <div class="filter-options" style="flex-direction:column;">
+                    <button class="filter-pill" data-value="easy">Easy</button>
+                    <button class="filter-pill" data-value="medium">Medium</button>
+                    <button class="filter-pill" data-value="hard">Hard</button>
+                  </div>
+                </div>
+
+                <!-- GUILD -->
+                <div class="filter-group" id="guildFilter" style="flex:0.8;">
+                  <div class="filter-title">Guild</div>
+                  <div class="filter-options" style="flex-direction:column;">
+                    <button class="filter-pill" data-value="engineering">Mage</button>
+                    <button class="filter-pill" data-value="business">Merchant</button>
+                    <button class="filter-pill" data-value="arts">Artisan</button>
+                    <button class="filter-pill" data-value="medicine">Healer</button>
+                  </div>
+                </div>
+
+              <!-- RIGHT COLUMN (SELECTED FILTERS) -->
+              <div class="selected-filters" style="flex:2;">
+                <div class="filter-title">Selected Filters</div>
+
+                <div style="margin-bottom:10px;">
+                  <strong style="color:#5da9ff;">Include:</strong>
+                  <div id="includeFilters" style="display:flex; flex-wrap:wrap;"></div>
+                </div>
+
+                <div>
+                  <strong style="color:#ff5d5d;">Exclude:</strong>
+                  <div id="excludeFilters" style="display:flex; flex-wrap:wrap;"></div>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="margin-bottom:10px; display:flex; gap:15px; flex-wrap:wrap;">
+              <label>
+                <input type="checkbox" id="excludeAnswered">
+                Hide already answered
+              </label>
+            </div>
+
             <div class="section-title">Answer Questions</div>
-            <p id="questionText">Click to load a question</p>
-            <input type="text" id="answerInput" class="form-control">
-            <button class="btn btn-primary mt-2" onclick="startQuestions()">Load Question</button>
-            <button class="btn btn-accent mt-2" onclick="submitAnswer()">Submit Answer</button>
-            <p id="resultText"></p>
+
+            <div id="questionList" class="question-list">
+              <p style="opacity:.6;">Click search to load questions</p>
+            </div>
+
+            <button class="btn btn-primary mt-2" onclick="startQuestions()">
+              Search Questions
+            </button>
+
+            </div>
+
+          <div id="answerSingleSection" class="card-custom" style="display:none;">
+            <div class="section-title">Answer Question</div>
+
+            <p id="singleQuestionText"></p>
+
+            <input type="text" id="singleAnswerInput" class="form-control" placeholder="Type your answer...">
+
+            <button class="btn btn-accent mt-2" onclick="submitSingleAnswer()">Submit Answer</button>
+            <button class="btn btn-secondary mt-2" onclick="backToSearch()">⬅ Back to Questions</button>
+
+            <p id="singleResultText"></p>
           </div>
 
           <div id="createSection" class="card-custom" style="display:none;">
@@ -183,6 +414,12 @@
             <button class="btn btn-primary" onclick="submitQuestion()">Submit</button>
             <p id="createResult"></p>
           </div>
+
+          <div id="myQuestionsSection" class="card-custom" style="display:none;">
+          <div class="section-title">My Questions</div>
+          <div id="myQuestionsList"></div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -231,7 +468,13 @@
       document.getElementById("chatSection").style.display = "none";
       document.getElementById("questionsSection").style.display = "none";
       document.getElementById("createSection").style.display = "none";
+      document.getElementById("myQuestionsSection").style.display = "none";
+      document.getElementById("answerSingleSection").style.display = "none";
+
       document.getElementById(section + "Section").style.display = "flex";
+
+      if (section === "myQuestions") loadMyQuestions();
+
       document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
       if (btn) btn.classList.add("active");
     }
@@ -333,7 +576,7 @@
     }
 
     async function selectRoom(room) {
-      currentRoom = room;
+      currentRoom = room === "guild" ? getGuildRoom() : "global";
       document.getElementById("roomMenu").style.display = "none";
       await sendHeartbeat();
       loadMessages();
@@ -344,36 +587,144 @@
       const title = document.getElementById("chatTitle");
       if (!title) return;
       if (currentRoom === "global") title.innerText = "World Chat";
-      else if (currentRoom === "guild") title.innerText = `${getGuild(major)} Chat`;
+      else if (currentRoom.startsWith("guild_")) title.innerText = `${getGuild(major)} Chat`;
       else title.innerText = "Chat";
     }
 
     /* =========================================================================
        QUESTION LOGIC
        ========================================================================= */
+
+    document.querySelectorAll(".filter-pill").forEach(btn => {
+      btn.addEventListener("click", () => {
+
+        // cycle: none → include → exclude → none
+        if (!btn.classList.contains("include") && !btn.classList.contains("exclude")) {
+          btn.classList.add("include");
+
+        } else if (btn.classList.contains("include")) {
+          btn.classList.remove("include");
+          btn.classList.add("exclude");
+
+        } else {
+          btn.classList.remove("exclude");
+        }
+
+        updateSelectedFiltersUI();
+      });
+    });
+
+    function updateSelectedFiltersUI() {
+      const includeDiv = document.getElementById("includeFilters");
+      const excludeDiv = document.getElementById("excludeFilters");
+
+      const all = document.querySelectorAll(".filter-pill");
+
+      const include = [];
+      const exclude = [];
+
+      all.forEach(btn => {
+        const text = btn.innerText;
+
+        if (btn.classList.contains("include")) include.push(text);
+        if (btn.classList.contains("exclude")) exclude.push(text);
+      });
+
+      includeDiv.innerHTML = include.map(i =>
+        `<span class="filter-chip include">✓ ${i}</span>`
+      ).join("");
+
+      excludeDiv.innerHTML = exclude.map(i =>
+        `<span class="filter-chip exclude">✖ ${i}</span>`
+      ).join("");
+    }
+
     async function startQuestions() {
-      const res = await fetch("/questions");
+
+      function getFilterValues(containerId) {
+        const include = [];
+        const exclude = [];
+
+        const buttons = document.querySelectorAll(`#${containerId} .filter-pill`);
+
+        buttons.forEach(btn => {
+          const value = btn.dataset.value;
+
+          if (btn.classList.contains("include")) include.push(value);
+          if (btn.classList.contains("exclude")) exclude.push(value);
+        });
+
+        return { include, exclude };
+      }
+
+      const cat = getFilterValues("categoryFilter");
+      const diff = getFilterValues("difficultyFilter");
+      const guild = getFilterValues("guildFilter");
+
+      const excludeAnswered = document.getElementById("excludeAnswered").checked;
+
+      const res = await fetch("/questions-advanced", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          username,
+
+          includeCategories: cat.include,
+          excludeCategories: cat.exclude,
+
+          includeDifficulties: diff.include,
+          excludeDifficulties: diff.exclude,
+
+          includeGuilds: guild.include,
+          excludeGuilds: guild.exclude,
+
+          excludeAnswered
+        })
+      });
+
       const data = await res.json();
-      const questionText = document.getElementById("questionText");
-      if (!data || data.length === 0) { questionText.innerText = "No questions available"; return; }
-      const q = data[0];
-      currentQuestionId = q.id;
-      questionText.innerText = q.question;
+
+      const questionText = document.getElementById("questionList");
+
+      if (!data.length) {
+        questionText.innerText = "No matching questions found.";
+        currentQuestionId = null;
+        return;
+      }
+
+      // Build selectable list
+      questionText.innerHTML = data.map(q => `
+        <div style="border:1px solid #5da9ff; padding:8px; margin-bottom:6px; border-radius:6px; cursor:pointer;"
+            onclick="openQuestion(${q.id}, \`${q.question}\`)">
+          ${q.question}
+          ${q.answered ? '<span style="color:orange;"> (answered)</span>' : ''}
+        </div>
+      `).join("");
     }
 
     async function submitAnswer() {
+      if (!currentQuestionId) {
+        document.getElementById("resultText").innerText = "No question loaded.";
+        return;
+      }
+
       const answer = document.getElementById("answerInput").value;
+
       const res = await fetch("/answer-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, questionId: currentQuestionId, answer })
       });
+
       const data = await res.json();
       const resultText = document.getElementById("resultText");
+
       if (data.correct) {
         resultText.innerText = `Correct! +${data.xpGained} XP | Rank: ${data.rank}`;
+        document.getElementById("answerInput").value = "";
+        startQuestions();
       } else {
-        resultText.innerText = "Wrong answer 😢";
+        resultText.innerText = data.message || "Wrong answer 😢";
       }
     }
 
@@ -385,7 +736,7 @@
       const res = await fetch("/add-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, answer, difficulty, category })
+        body: JSON.stringify({ question, answer, difficulty, category, username })
       });
       const text = await res.text();
       document.getElementById("createResult").innerText = text;
@@ -394,6 +745,112 @@
       document.getElementById("newCategory").value = "";
     }
 
+    function selectQuestion(id, text) {
+      currentQuestionId = id;
+      document.getElementById("questionText").innerText = text;
+    }
+        /* =========================================================================
+       QUESTION LOGIC, 
+       ========================================================================= */
+
+    async function loadMyQuestions() {
+      const res = await fetch(`/my-questions/${username}`);
+      const data = await res.json();
+
+      const container = document.getElementById("myQuestionsList");
+
+      if (!data.length) {
+        container.innerHTML = "<p>No questions created yet.</p>";
+        return;
+      }
+
+      container.innerHTML = data.map(q => `
+        <div style="border:1px solid #5da9ff; padding:10px; margin-bottom:10px; border-radius:8px;">
+          <strong>${q.question}</strong><br>
+          <small>Answer: ${q.answer}</small><br>
+          <small>${q.category} | ${q.difficulty}</small><br><br>
+
+          <button onclick="editQuestion(${q.id}, '${q.question}', '${q.answer}', '${q.category}', '${q.difficulty}')">✏️ Edit</button>
+          <button onclick="deleteQuestion(${q.id})" style="color:red;">❌ Delete</button>
+        </div>
+      `).join("");
+    }
+
+    async function deleteQuestion(id) {
+      if (!confirm("Delete this question?")) return;
+
+      await fetch("/delete-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ questionId: id, username })
+      });
+
+      loadMyQuestions();
+    }
+
+    async function editQuestion(id, oldQ, oldA, oldC, oldD) {
+      const question = prompt("Edit question:", oldQ);
+      const answer = prompt("Edit answer:", oldA);
+
+      if (!question || !answer) return;
+
+      await fetch("/edit-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId: id,
+          username,
+          question,
+          answer,
+          category: oldC,
+          difficulty: oldD
+        })
+      });
+
+      loadMyQuestions();
+    }
+
+    function openQuestion(id, text) {
+      currentQuestionId = id;
+
+      document.getElementById("singleQuestionText").innerText = text;
+      document.getElementById("singleAnswerInput").value = "";
+      document.getElementById("singleResultText").innerText = "";
+
+      // switch views
+      document.getElementById("questionsSection").style.display = "none";
+      document.getElementById("answerSingleSection").style.display = "flex";
+    }
+
+    function backToSearch() {
+      document.getElementById("answerSingleSection").style.display = "none";
+      document.getElementById("questionsSection").style.display = "flex";
+    }
+
+    async function submitSingleAnswer() {
+      if (!currentQuestionId) {
+        document.getElementById("singleResultText").innerText = "No question selected.";
+        return;
+      }
+
+      const answer = document.getElementById("singleAnswerInput").value;
+
+      const res = await fetch("/answer-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, questionId: currentQuestionId, answer })
+      });
+
+      const data = await res.json();
+
+      if (data.correct) {
+        document.getElementById("singleResultText").innerText =
+          `Correct! +${data.xpGained} XP | Rank: ${data.rank}`;
+      } else {
+        document.getElementById("singleResultText").innerText =
+          data.message || "Wrong answer 😢";
+      }
+    }
     /* =========================================================================
        NETWORKING & LIFECYCLE
        ========================================================================= */
