@@ -25,5 +25,5 @@ function determineRank(totalXP) {
     return 'Bronze'; 
 }
 
-//Export to the db to be used
+//Export to the server.db to be used
 module.exports = { calculateXP, determineRank};

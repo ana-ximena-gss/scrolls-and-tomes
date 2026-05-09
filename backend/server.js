@@ -241,7 +241,7 @@ app.post("/answer-question", (req, res) => {
 
         // Allow retries if wrong
         if (!isCorrect) {
-            return res.json({ correct: false, message: "Wrong answer 😢 (You can try again!)" });
+            return res.json({ correct: false, message: "Wrong answer (You can try again!)" });
         }
 
         // Check if already answered correctly
