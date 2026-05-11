@@ -1,65 +1,342 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scrolls & Tomes</title>
+
   <style>
-    body {
-      /* Arcane Night Background */
-      background-color: #0b0c10;
-      background-image: 
-        radial-gradient(circle at 50% -20%, #3a1c71 0%, transparent 60%),
-        linear-gradient(to bottom, transparent 0%, #14151c 100%);
-      
-      /* Typography styling for the theme */
-      color: #c5bcf0; /* Soft, magical lavender/white */
-      font-family: "Trebuchet MS", "Lucida Sans Unicode", sans-serif;
-      text-align: center;
-      padding-top: 10%;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: url("images/homepageBackgroud.png");
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+
+      font-family: "Trebuchet MS", "Lucida Sans Unicode", sans-serif;
+      color: #c5bcf0;
+
       height: 100vh;
+      overflow: hidden;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      text-align: center;
+      position: relative;
+    }
+
+    /* =========================================
+      SPREAD MAGICAL LIGHT STREAKS
+    ========================================== */
+
+    .light-container {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .light-streak {
+      position: absolute;
+
+      top: -10%;
+
+      width: 2px;
+      height: 52vh;
+
+      border-radius: 999px;
+
+      transform-origin: top center;
+
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255,255,255,0) 0%,
+          rgba(255,255,255,0.95) 10%,
+          rgba(255,255,255,0.55) 28%,
+          rgba(255,220,255,0.12) 55%,
+          transparent 100%
+        );
+
+      opacity: 0;
+
+      filter: blur(0.8px);
+
+      mix-blend-mode: screen;
+
+      animation:
+        streakMove linear infinite,
+        streakGlow ease-in-out infinite;
+    }
+
+    /* DIFFERENT THICKNESSES */
+    .s1 { width: 1px; }
+    .s2 { width: 2px; }
+    .s3 { width: 3px; }
+
+    /* SHIMMER */
+    @keyframes streakGlow {
+      0% {
+        opacity: 0.04;
+      }
+
+      50% {
+        opacity: 0.95;
+      }
+
+      100% {
+        opacity: 0.04;
+      }
+    }
+
+    /* MOVEMENT */
+    @keyframes streakMove {
+      0% {
+        transform:
+          translateX(0px)
+          rotate(var(--angle));
+      }
+
+      100% {
+        transform:
+          translateX(-28px)
+          rotate(calc(var(--angle) - 1deg));
+      }
+    }
+
+    /* =========================================
+       FLOWER EMBERS
+    ========================================== */
+
+    .embers {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .ember {
+      position: absolute;
+      bottom: -10px;
+
+      width: 2px;
+      height: 2px;
+
+      border-radius: 50%;
+
+      opacity: 0;
+
+      animation: floatUp linear infinite;
+
+      background:
+        radial-gradient(circle, #ff9cff 0%, #d935d2 60%, transparent 100%);
+
+      box-shadow:
+        0 0 4px #ff7cf8,
+        0 0 8px #d935d2,
+        0 0 14px #8f3dff;
+    }
+
+    .ember:nth-child(3n) {
+      width: 3px;
+      height: 3px;
+    }
+
+    .ember:nth-child(4n) {
+      width: 1px;
+      height: 1px;
+    }
+
+    .ember:nth-child(5n) {
+      background:
+        radial-gradient(circle, #ffffff 0%, #ffc8ff 50%, transparent 100%);
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform:
+          translateY(0)
+          translateX(0)
+          scale(1);
+
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      60% {
+        opacity: 0.9;
+      }
+
+      100% {
+        transform:
+          translateY(-220px)
+          translateX(var(--drift))
+          scale(0.2);
+
+        opacity: 0;
+      }
+    }
+
+    /* =========================================
+       CONTENT
+    ========================================== */
+
+    .content {
+      position: relative;
+      z-index: 5;
     }
 
     h1 {
-      font-size: 3.5rem;
-      margin-bottom: 0.5rem;
-      color: #e2d9f3;
-      text-shadow: 0 0 10px rgba(186, 143, 255, 0.5); /* Magical glow */
+      font-size: 5rem;
+      color: #f1e8ff;
+
+      letter-spacing: 4px;
+      margin-bottom: 1rem;
+
+      text-shadow:
+        0 0 10px rgba(186, 143, 255, 0.8),
+        0 0 20px rgba(138, 107, 219, 0.7),
+        0 0 40px rgba(138, 107, 219, 0.5);
     }
 
     p {
-      font-size: 1.2rem;
-      color: #a097b5;
-      margin-bottom: 2rem;
+      font-size: 1.6rem;
+      color: #d2c7f0;
+
+      margin-bottom: 3rem;
+
+      text-shadow:
+        0 0 8px rgba(0, 0, 0, 0.8);
+    }
+
+    .button-container {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
     }
 
     a {
-      color: #e2d9f3;
+      color: #f1e8ff;
       text-decoration: none;
+
+      font-size: 1.2rem;
       font-weight: bold;
-      border: 1px solid #4a3b72;
-      padding: 10px 20px;
-      margin: 0 10px;
-      border-radius: 3px;
-      background-color: rgba(74, 59, 114, 0.2);
+
+      padding: 14px 32px;
+
+      border-radius: 10px;
+      border: 1px solid #6f56a8;
+
+      background-color: rgba(74, 59, 114, 0.35);
+
+      backdrop-filter: blur(4px);
+
       transition: all 0.3s ease;
-      box-shadow: 0 0 5px rgba(0,0,0,0.5);
+
+      box-shadow:
+        0 0 10px rgba(0,0,0,0.7),
+        0 0 15px rgba(138, 107, 219, 0.2);
     }
 
     a:hover {
-      background-color: #4a3b72;
-      box-shadow: 0 0 15px rgba(138, 107, 219, 0.6);
-      text-shadow: 0 0 5px #fff;
+      background-color: rgba(111, 86, 168, 0.85);
+
+      transform: scale(1.05);
+
+      text-shadow: 0 0 8px #fff;
+
+      box-shadow:
+        0 0 20px rgba(138, 107, 219, 0.8),
+        0 0 40px rgba(138, 107, 219, 0.5);
     }
   </style>
 </head>
+
 <body>
 
-<h1>Scrolls & Tomes</h1>
-<p>Welcome to the guild-based learning RPG.</p>
+  <!-- MAGICAL LIGHT STREAKS -->
+  <div class="light-container">
 
-<!-- Navigation -->
-<a href="/signup.html">Sign Up</a>
-<a href="/login.html">Login</a>
+    <!-- LEFT SPREAD -->
+    <div class="light-streak s1"
+        style="right:48%; --angle:34deg; height:34vh; animation-duration:6s,3s;"></div>
+
+    <div class="light-streak s2"
+        style="right:46%; --angle:30deg; height:40vh; animation-duration:8s,4s;"></div>
+
+    <div class="light-streak s1"
+        style="right:44%; --angle:27deg; height:46vh; animation-duration:7s,3s;"></div>
+
+    <!-- CENTER -->
+    <div class="light-streak s3"
+        style="right:42%; --angle:23deg; height:58vh; animation-duration:9s,5s;"></div>
+
+    <div class="light-streak s1"
+        style="right:40%; --angle:20deg; height:54vh; animation-duration:5s,2.5s;"></div>
+
+    <div class="light-streak s2"
+        style="right:38%; --angle:18deg; height:60vh; animation-duration:8s,4s;"></div>
+
+    <!-- RIGHT SIDE -->
+    <div class="light-streak s1"
+        style="right:36%; --angle:14deg; height:48vh; animation-duration:6s,3s;"></div>
+
+    <div class="light-streak s2"
+        style="right:34%; --angle:11deg; height:42vh; animation-duration:7s,3.5s;"></div>
+
+    <div class="light-streak s1"
+        style="right:32%; --angle:8deg; height:36vh; animation-duration:5s,2s;"></div>
+
+  </div>
+
+  <!-- FLOWER EMBERS -->
+  <div class="embers">
+
+    <!-- LEFT -->
+    <span class="ember" style="left:2%; bottom:0%; animation-duration:4s; animation-delay:0s; --drift:20px;"></span>
+    <span class="ember" style="left:5%; bottom:2%; animation-duration:5s; animation-delay:1s; --drift:-10px;"></span>
+    <span class="ember" style="left:8%; bottom:4%; animation-duration:4.5s; animation-delay:2s; --drift:30px;"></span>
+    <span class="ember" style="left:12%; bottom:3%; animation-duration:6s; animation-delay:1.2s; --drift:-20px;"></span>
+
+    <!-- CENTER -->
+    <span class="ember" style="left:36%; bottom:4%; animation-duration:5s; animation-delay:2s; --drift:-10px;"></span>
+    <span class="ember" style="left:42%; bottom:2%; animation-duration:6s; animation-delay:0.5s; --drift:20px;"></span>
+    <span class="ember" style="left:48%; bottom:0%; animation-duration:4.5s; animation-delay:1.5s; --drift:-15px;"></span>
+
+    <!-- RIGHT -->
+    <span class="ember" style="left:78%; bottom:3%; animation-duration:5s; animation-delay:0.5s; --drift:-20px;"></span>
+    <span class="ember" style="left:84%; bottom:5%; animation-duration:6s; animation-delay:2s; --drift:15px;"></span>
+    <span class="ember" style="left:90%; bottom:2%; animation-duration:4.5s; animation-delay:1.2s; --drift:-10px;"></span>
+
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <h1>Scrolls & Tomes</h1>
+
+    <p>Welcome to the guild-based learning RPG.</p>
+
+    <div class="button-container">
+      <a href="/signup.html">Sign Up</a>
+      <a href="/login.html">Login</a>
+    </div>
+
+  </div>
 
 </body>
 </html>

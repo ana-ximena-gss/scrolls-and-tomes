@@ -3,170 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <style>
-        :root {
-            --parchment-bg: #fdf6e3;
-            --ink-dark: #2c1e16;
-            --ink-light: #5c4033;
-            --accent-red: #8b0000;
-            --accent-hover: #660000;
-            --input-bg: #f4ebd8;
-        }
+    <title>Scrolls & Tomes - Login</title>
 
+    <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Georgia', serif; /* Changed to a serif font for the academic vibe */
+            box-sizing: border-box;
         }
 
         body {
             height: 100vh;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--ink-dark);
-            position: relative;
+
+            font-family: "Trebuchet MS", "Lucida Sans Unicode", sans-serif;
+
+            background:
+                linear-gradient(rgba(5, 5, 10, 0.3), rgba(5, 5, 10, 0.4)),
+                url("images/homepageBackgroud.png");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
             overflow: hidden;
         }
 
-        body::before {
-            content: "";
-            position: absolute;
-            top: -5%;
-            left: -5%;
-            width: 110%;
-            height: 110%;
-            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            filter: blur(10px) brightness(0.4);
-            z-index: -1;
-        }
-
         .login-container {
-            background-color: var(--parchment-bg);
-            padding: 3rem 2.5rem;
-            border-radius: 4px; /* Sharper corners like a book */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-            border: 4px double var(--ink-light); /* Classic double border */
             width: 100%;
-            max-width: 400px;
-            text-align: center;
-            position: relative;
-        }
+            max-width: 450px;
 
-        /* Decorative corners */
-        .login-container::before, .login-container::after {
-            content: "✦";
-            position: absolute;
-            color: var(--ink-light);
-            font-size: 1.5rem;
+            padding: 3rem;
+
+            border-radius: 18px;
+
+            background: rgba(20, 18, 35, 0.72);
+
+            border: 1px solid rgba(138, 107, 219, 0.35);
+
+            backdrop-filter: blur(10px);
+
+            box-shadow:
+                0 0 20px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(138, 107, 219, 0.25);
+
+            text-align: center;
         }
-        .login-container::before { top: 10px; left: 15px; }
-        .login-container::after { top: 10px; right: 15px; }
 
         .login-header h2 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--ink-dark);
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-size: 3rem;
+
+            color: #f1e8ff;
+
+            margin-bottom: 0.8rem;
+
+            letter-spacing: 3px;
+
+            text-shadow:
+                0 0 10px rgba(186, 143, 255, 0.8),
+                0 0 20px rgba(138, 107, 219, 0.6);
         }
 
         .login-header p {
-            color: var(--ink-light);
-            margin-bottom: 2rem;
-            font-style: italic;
+            color: #cfc2f5;
+
+            font-size: 1.1rem;
+
+            margin-bottom: 2.5rem;
+
+            text-shadow: 0 0 8px rgba(0,0,0,0.8);
         }
 
         .input-group {
             margin-bottom: 1.5rem;
-            text-align: left;
         }
 
         .input-group input {
             width: 100%;
-            padding: 0.85rem 1rem;
-            background-color: var(--input-bg);
-            border: 1px solid var(--ink-light);
-            border-radius: 2px;
-            color: var(--ink-dark);
-            font-size: 1.1rem;
-            font-family: 'Georgia', serif;
+
+            padding: 1rem 1.2rem;
+
+            border-radius: 10px;
+
+            border: 1px solid rgba(138, 107, 219, 0.4);
+
+            background: rgba(255, 255, 255, 0.08);
+
+            color: #f1e8ff;
+
+            font-size: 1rem;
+
+            outline: none;
+
             transition: all 0.3s ease;
         }
 
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--accent-red);
-            background-color: #fffaf0;
-            box-shadow: 0 0 5px rgba(139, 0, 0, 0.2);
+        .input-group input::placeholder {
+            color: #b8abd9;
         }
 
-        .input-group input::placeholder {
-            color: #8b7355;
-            font-style: italic;
+        .input-group input:focus {
+            border-color: #a67cff;
+
+            background: rgba(255, 255, 255, 0.12);
+
+            box-shadow:
+                0 0 10px rgba(166, 124, 255, 0.4),
+                0 0 20px rgba(166, 124, 255, 0.2);
         }
 
         .submit-btn {
             width: 100%;
+
+            margin-top: 1rem;
+
             padding: 1rem;
-            background-color: var(--accent-red);
-            color: #fdf6e3;
-            border: 2px solid #5c0000;
-            border-radius: 2px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: rgba(111, 86, 168, 0.85);
+
+            color: #f1e8ff;
+
             font-size: 1.1rem;
             font-weight: bold;
+
             letter-spacing: 1px;
-            text-transform: uppercase;
+
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 1rem;
+
+            transition: all 0.3s ease;
+
+            box-shadow:
+                0 0 10px rgba(138, 107, 219, 0.3);
         }
 
         .submit-btn:hover {
-            background-color: var(--accent-hover);
+            transform: scale(1.03);
+
+            background: rgba(138, 107, 219, 0.95);
+
+            box-shadow:
+                0 0 20px rgba(138, 107, 219, 0.7),
+                0 0 40px rgba(138, 107, 219, 0.3);
         }
 
-        .submit-btn:active {
-            transform: translateY(2px);
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         #errorMessage {
-            color: var(--accent-red);
-            font-weight: bold;
-            font-size: 0.95rem;
-            margin-top: 1rem;
-            min-height: 20px;
             display: none;
-            padding: 0.5rem;
-            border-top: 1px dashed var(--accent-red);
-            border-bottom: 1px dashed var(--accent-red);
+
+            margin-top: 1.5rem;
+
+            padding: 0.9rem;
+
+            border-radius: 8px;
+
+            background: rgba(120, 20, 20, 0.25);
+
+            border: 1px solid rgba(255, 80, 80, 0.35);
+
+            color: #ffb3b3;
+
+            font-size: 0.95rem;
+
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
     </style>
 </head>
+
 <body>
 
     <div class="login-container">
+
         <div class="login-header">
             <h2>Login</h2>
-            <p>Present your credentials</p>
+            <p>Enter the Arcane Archives</p>
         </div>
 
         <form id="loginForm">
+
             <div class="input-group">
-                <input type="text" id="username" placeholder="Username" required autocomplete="off">
-            </div>
-            
-            <div class="input-group">
-                <input type="password" id="password" placeholder="Password" required>
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Username"
+                    required
+                    autocomplete="off"
+                >
             </div>
 
-            <button type="submit" class="submit-btn">Enter</button>
-            <div id="errorMessage">Invalid username or password.</div>
+            <div class="input-group">
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Enter
+            </button>
+
+            <div id="errorMessage">
+                Invalid username or password.
+            </div>
+
         </form>
+
     </div>
 
     <script>
@@ -175,36 +228,54 @@
 
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
+
             const errorDiv = document.getElementById("errorMessage");
             const submitBtn = document.querySelector(".submit-btn");
 
             errorDiv.style.display = "none";
+
             submitBtn.textContent = "Verifying...";
             submitBtn.disabled = true;
 
             try {
                 const res = await fetch("/login", {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({username, password})
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
                 });
 
                 const data = await res.json();
-                
-                // using res.ok since its true for 200-level status code
+
                 if (res.ok && data.message === "Login successful") {
+
                     localStorage.setItem("username", data.username);
                     localStorage.setItem("major", data.major);
+
                     window.location.href = "/dashboard.html";
+
                 } else {
-                    errorDiv.textContent = data.message || "Authentication failed.";
+
+                    errorDiv.textContent =
+                        data.message || "Authentication failed.";
+
                     errorDiv.style.display = "block";
                 }
+
             } catch (err) {
-                errorDiv.textContent = "The archives are currently unreachable.";
+
+                errorDiv.textContent =
+                    "The archives are currently unreachable.";
+
                 errorDiv.style.display = "block";
+
             } finally {
-                submitBtn.textContent = "Entering";
+
+                submitBtn.textContent = "Enter";
                 submitBtn.disabled = false;
             }
         });

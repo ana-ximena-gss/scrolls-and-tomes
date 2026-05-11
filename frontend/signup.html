@@ -2,150 +2,277 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sign up - Scrolls & Tomes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrolls & Tomes - Sign Up</title>
+
   <style>
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      font-family: 'Georgia', 'Times New Roman', serif;
-      /*background-color: #1a1a1a; /* Fallback color (son im crine) */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    /* The original blurred library background 
-    (PLEASE TRY TO CHANGE THIS TO A PIXALITED BACKGROUND WITH A DIFFRENT BACKGROUND,*/
-    .background {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
-      background-size: cover; background-position: center;
-      filter: blur(8px) brightness(0.3); /* Dark enough to make the card pop */
-      z-index: -1;
-      transform: scale(1.1); /* Prevents blurred edges from showing white borders */
+    body {
+      height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      font-family: "Trebuchet MS", "Lucida Sans Unicode", sans-serif;
+
+      background:
+        linear-gradient(rgba(5, 5, 10, 0.3), rgba(5, 5, 10, 0.4)),
+        url("images/homepageBackgroud.png");
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+
+      overflow: hidden;
     }
 
-    .container {
-      display: flex; justify-content: center; align-items: center; height: 100vh;
-    }
+    .signup-container {
+      width: 100%;
+      max-width: 480px;
 
-    /* The Quest-Log Card */
-    .card {
-      background: rgba(20, 20, 20, 0.7);
+      padding: 3rem;
+
+      border-radius: 18px;
+
+      background: rgba(20, 18, 35, 0.72);
+
+      border: 1px solid rgba(138, 107, 219, 0.35);
+
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      width: 360px;
-      padding: 50px 40px;
+
+      box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.8),
+        0 0 40px rgba(138, 107, 219, 0.25);
+
       text-align: center;
-      border: 2px solid #D4AF37; /* Gold Frame */
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.15);
-      position: relative;
     }
 
-    /* Decorative Gold Corners */
-    .card::before, .card::after {
-      content: "✧";
-      position: absolute;
-      color: #D4AF37;
-      font-size: 20px;
-      width: 20px; height: 20px;
-    }
-    .card::before { top: 12px; left: 12px; }
-    .card::after { bottom: 12px; right: 12px; }
+    .signup-header h2 {
+      font-size: 3rem;
 
-    h2 {
-      margin: 0; color: #D4AF37;
-      font-size: 24px; letter-spacing: 4px;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+      color: #f1e8ff;
+
+      margin-bottom: 0.8rem;
+
+      letter-spacing: 3px;
+
+      text-shadow:
+        0 0 10px rgba(186, 143, 255, 0.8),
+        0 0 20px rgba(138, 107, 219, 0.6);
     }
 
-    .subtitle {
-      font-style: italic; color: #9A8D75;
-      font-size: 13px; margin: 10px 0 30px 0;
-      text-transform: lowercase;
+    .signup-header p {
+      color: #cfc2f5;
+
+      font-size: 1.1rem;
+
+      margin-bottom: 2.5rem;
+
+      text-shadow: 0 0 8px rgba(0,0,0,0.8);
     }
 
-    form { display: flex; flex-direction: column; gap: 20px; }
-
-    /* Input styling with gold focus */
-    input, select {
-      width: 100%; box-sizing: border-box; padding: 12px;
-      background-color: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      color: #F8F5ED; font-family: inherit; font-size: 15px;
-      outline: none; transition: 0.3s;
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
 
-    input:focus, select:focus {
-      background-color: rgba(0, 0, 0, 0.7);
-      border-color: #D4AF37;
-      box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+    input,
+    select {
+      width: 100%;
+
+      padding: 1rem 1.2rem;
+
+      border-radius: 10px;
+
+      border: 1px solid rgba(138, 107, 219, 0.4);
+
+      background: rgba(255, 255, 255, 0.08);
+
+      color: #f1e8ff;
+
+      font-size: 1rem;
+
+      outline: none;
+
+      transition: all 0.3s ease;
     }
 
-    input::placeholder { color: #888; font-style: italic; }
-
-    select option { background-color: #1a1a1a; color: #F8F5ED; }
-
-    /* Action Button - Gold Text on Deep Red */
-    button {
-      background-color: #8B0000;
-      color: #D4AF37;
-      border: 1px solid #D4AF37;
-      padding: 15px; margin-top: 10px;
-      font-weight: bold; font-size: 14px;
-      letter-spacing: 2px; text-transform: uppercase;
-      cursor: pointer; transition: 0.3s;
+    input::placeholder {
+      color: #b8abd9;
     }
 
-    button:hover {
-      background-color: #A00000;
-      box-shadow: 0 0 15px rgba(139, 0, 0, 0.6);
-      transform: translateY(-1px);
+    select {
+      color: #f1e8ff;
+      cursor: pointer;
+    }
+
+    select option {
+      background: #171325;
+      color: #f1e8ff;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #a67cff;
+
+      background: rgba(255, 255, 255, 0.12);
+
+      box-shadow:
+        0 0 10px rgba(166, 124, 255, 0.4),
+        0 0 20px rgba(166, 124, 255, 0.2);
+    }
+
+    .submit-btn {
+      margin-top: 1rem;
+
+      padding: 1rem;
+
+      border: none;
+      border-radius: 10px;
+
+      background: rgba(111, 86, 168, 0.85);
+
+      color: #f1e8ff;
+
+      font-size: 1.1rem;
+      font-weight: bold;
+
+      letter-spacing: 1px;
+
+      cursor: pointer;
+
+      transition: all 0.3s ease;
+
+      box-shadow:
+        0 0 10px rgba(138, 107, 219, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.03);
+
+      background: rgba(138, 107, 219, 0.95);
+
+      box-shadow:
+        0 0 20px rgba(138, 107, 219, 0.7),
+        0 0 40px rgba(138, 107, 219, 0.3);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
   </style>
 </head>
+
 <body>
 
-  <div class="background"></div>
+  <div class="signup-container">
 
-  <div class="container">
-    <div class="card">
-      <h2>SIGN UP</h2>
-      <p class="subtitle">It all starts here, shakabrah</p>
-
-      <form id="signupForm">
-        <input type="text" id="username" placeholder="Enter Username" required>
-        <input type="password" id="password" placeholder="Enter Password" required>
-
-        <select id="major" required>
-          <option value="" disabled selected>Select your Major</option>
-          <option value="business">Business</option>
-          <option value="engineering">Engineering</option>
-          <option value="arts">Arts</option>
-          <option value="medicine">Medicine</option>
-        </select>
-
-        <button type="submit">Begin</button>
-      </form>
+    <div class="signup-header">
+      <h2>Sign Up</h2>
+      <p>Begin your journey through the Arcane Archives</p>
     </div>
+
+    <form id="signupForm">
+
+      <input
+        type="text"
+        id="username"
+        placeholder="Enter Username"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter Password"
+        required
+      >
+
+      <select id="major" required>
+        <option value="" disabled selected>
+          Select your Major
+        </option>
+
+        <option value="business">Business</option>
+        <option value="engineering">Engineering</option>
+        <option value="arts">Arts</option>
+        <option value="medicine">Medicine</option>
+      </select>
+
+      <button type="submit" class="submit-btn">
+        Begin Journey
+      </button>
+
+    </form>
+
   </div>
 
   <script>
     document.getElementById("signupForm").addEventListener("submit", async (e) => {
+
       e.preventDefault();
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const major = document.getElementById("major").value;
 
-      const res = await fetch("/signup", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({username, password, major})
-      });
+      const username =
+        document.getElementById("username").value;
 
-      const text = await res.text();
-      if (text === "User created") {
-        alert("Character Created! Redirecting to login...");
-        window.location.href = "/login.html";
-      } else {
-        alert(text);
+      const password =
+        document.getElementById("password").value;
+
+      const major =
+        document.getElementById("major").value;
+
+      const submitBtn =
+        document.querySelector(".submit-btn");
+
+      submitBtn.textContent = "Creating...";
+      submitBtn.disabled = true;
+
+      try {
+
+        const res = await fetch("/signup", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            username,
+            password,
+            major
+          })
+        });
+
+        const text = await res.text();
+
+        if (text === "User created") {
+
+          alert("Character Created! Redirecting to login...");
+
+          window.location.href = "/login.html";
+
+        } else {
+
+          alert(text);
+        }
+
+      } catch (err) {
+
+        alert("The Arcane Archives are currently unreachable.");
+
+      } finally {
+
+        submitBtn.textContent = "Begin Journey";
+        submitBtn.disabled = false;
       }
     });
   </script>
