@@ -16,7 +16,7 @@ app.use(express.static("frontend"));
 app.use(bodyParser.json());
 
 // --- ROUTES ---
-// Register the separated route files to the app
+// Register the separated route files to the app (Using files)
 app.use(authRoutes);
 app.use(presenceRoutes);
 app.use(questionsRoutes);

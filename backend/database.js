@@ -5,7 +5,7 @@ const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./users.db");
 
 db.serialize(() => {
-    //User accounts and stats
+    // User accounts and stats
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
@@ -15,7 +15,7 @@ db.serialize(() => {
         rank TEXT DEFAULT 'Bronze'
     )`);
 
-    //chat reactions
+    // Chat reactions
     db.run(`CREATE TABLE IF NOT EXISTS reactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         message_id INTEGER,
@@ -24,7 +24,7 @@ db.serialize(() => {
         FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     )`);
 
-    //Track online status
+    // Track online status
     db.run(`CREATE TABLE IF NOT EXISTS active_users (
         user_id INTEGER PRIMARY KEY,
         guild TEXT,
@@ -33,7 +33,7 @@ db.serialize(() => {
         FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     )`);
 
-    //Question bank
+    // Question bank
     db.run(`CREATE TABLE IF NOT EXISTS questions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         question TEXT,
@@ -44,7 +44,7 @@ db.serialize(() => {
         FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     )`);
 
-    //Track which questions each user has answered correctly to prevent repeat XP farming
+    // Track which questions each user has answered correctly to prevent repeat XP farming
     db.run(`CREATE TABLE IF NOT EXISTS user_correct_answers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
@@ -61,7 +61,7 @@ db.serialize(() => {
         status TEXT DEFAULT 'pending'
     )`);
 
-    //Chat History
+    // Chat History
     db.run(`CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
