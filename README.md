@@ -7,5 +7,5 @@ Scrolls & Tomes is a fantasy-themed social web application designed for universi
 The application combines social interaction and educational gameplay. Users will be able to communicate with members of their guild, compete against other guilds by answering questions from different academic areas to earn points, and track their progress through rankings and leaderboards. As players progress, they improve their rank and reputation within their guild while tracking their progress through leaderboards and achievements. 
 
 # Team Members
-* Ana Garcia Suarez
-* Yahir Ortiz
+* Ana Garcia Suarez (ana-ximena-gss)
+* Yahir Ortiz       (WildMeta5)
